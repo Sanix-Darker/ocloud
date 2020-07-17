@@ -19,22 +19,22 @@ def index():
     return render_template("index.html");  
 
 
-# @app.route('/api', methods=['GET'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
-# def api():
-#     # Build the response
-#     response = jsonify({
-#         'status': 'success',
-#         'author': 'sanix-darker (github.com/sanix-darker)',
-#         'documentation': 'https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest',
-#         'message': 'Welcome to Ogram API.'
-#     })
-#     # Let's allow all Origin requests
-#     response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
-#     return response
+@app.route('/api/', methods=['GET'])  # To prevent Cors issues
+@cross_origin(supports_credentials=True)
+def api():
+    # Build the response
+    response = jsonify({
+        'status': 'success',
+        'author': 'sanix-darker (github.com/sanix-darker)',
+        'documentation': 'https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest',
+        'message': 'Welcome to Ogram API.'
+    })
+    # Let's allow all Origin requests
+    response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
+    return response
 
 
-@app.route('/upload', methods=['POST'])  # To prevent Cors issues
+@app.route('/api/upload/', methods=['POST'])  # To prevent Cors issues
 @cross_origin(supports_credentials=True)
 def apiUpload():
     if not path.exists("./app/server/static/"):
@@ -94,7 +94,7 @@ def apiUpload():
     return response
 
 
-@app.route('/download/<file_key>', methods=['GET'])  # To prevent Cors issues
+@app.route('/api/download/<file_key>/', methods=['GET'])  # To prevent Cors issues
 @cross_origin(supports_credentials=True)
 def apiDownload(file_key):
     json_map_file = "./json_maps/m_" + file_key + ".json"
