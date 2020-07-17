@@ -8,8 +8,6 @@ tests/__pycache__/
 tests/.pytest_cache/
 config.txt
 .idea
-*.json
-*.txt
 app/server/static/*
 json_maps/*
 chunks/*
