@@ -158,7 +158,7 @@ def send_file(chat_id, file_name):
 
     # We split the file using tth Split module
     # We instantiate the Split class by passing the chunk directory
-    sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/")
+    sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/files/")
 
     # We decompose the file in multiple chunks
     sp.decompose(file_name)
@@ -265,7 +265,7 @@ def get_file(json_map_path):
     print("[+] Start getting the file...")
 
     # We instantiate the Split class by passing the chunk directory
-    sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/")
+    sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/files/")
 
     # We read the json map
     with open(json_map_path, "r") as file_:

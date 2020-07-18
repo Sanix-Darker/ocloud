@@ -10,3 +10,4 @@ config.txt
 .idea
 json_maps/*
 chunks/*
+app/server/static/files/*

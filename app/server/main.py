@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 app.config['Secret'] = "Secret"
-app.config['UPLOAD_FOLDER'] = "./app/server/static/"
+app.config['UPLOAD_FOLDER'] = "./app/server/static/files/"
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 
@@ -37,8 +37,8 @@ def api():
 @app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
 @cross_origin(supports_credentials=True)
 def apiUpload():
-    if not path.exists("./app/server/static/"):
-        makedirs("./app/server/static/")
+    if not path.exists("./app/server/static/files/"):
+        makedirs("./app/server/static/files/")
 
     try:
         chat_id = request.form.get("chat_id")
@@ -57,14 +57,14 @@ def apiUpload():
                 message = ""
                 file.save(path.join(app.config['UPLOAD_FOLDER'], filename))
                 json_path = "./json_maps/m_" + \
-                            get_md5_sum("./app/server/static/" + filename).replace(" ", "").split("/")[-1] + ".json"
+                            get_md5_sum("./app/server/static/files/" + filename).replace(" ", "").split("/")[-1] + ".json"
 
                 if path.exists(json_path):
                     # We don't save the file and return the json-map
                     message = 'Your file ' + filename + ' was already saved on telegram servers!'
                 else:
                     # We save the file and return the json-map path
-                    json_path = send_file(chat_id, "./app/server/static/" + filename)
+                    json_path = send_file(chat_id, "./app/server/static/files/" + filename)
                     message = 'Your file ' + filename + ' have been saved successfully !'
 
                 response = jsonify({
@@ -74,7 +74,7 @@ def apiUpload():
                     'json_map': json.loads(open(json_path).read())
                 })
                 # We delete the original file
-                remove("./app/server/static/" + filename)
+                remove("./app/server/static/files/" + filename)
         else:
             print("[x] Some parameters are missing, check your request again!")
             response = jsonify({

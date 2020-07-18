@@ -12,8 +12,8 @@ const send_file = () => {
     const fileElement = document.getElementById("file_id");
     const request = new XMLHttpRequest();
 
-    if (chatId === ""){
-        alert("Provide a chat_id to save a file !")
+    if (chatId === "" && chatId.length <= 5){
+        alert("Provide a valid chat_id to save a file !")
     }else{
         document.getElementById("response").innerHTML = "Sending the file..."
         formData.append("chat_id", chatId);
@@ -22,18 +22,39 @@ const send_file = () => {
         request.open("POST", "/api/upload");
         request.onload  = function() {
             const responseHtml = `
-                    <b>- File_name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i> </li>
-                    <br/><b>- File_key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i> </li>
-                    <br/><b>- Chunks :</b> ${JSON.parse(request.response)["json_map"]["cloud_map"].length} </li>
-                    <br/><b>- Timestamp :</b> ${new Date().toUTCString()} </li><br/>`;
-            
+                    <b>- File_name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
+                    <br/><b>- File_key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
+                    <br/><b>- Chunks :</b> ${JSON.parse(request.response)["json_map"]["cloud_map"].length}
+                    <br/><b>- Timestamp :</b> ${new Date().toUTCString()} <br/>`;
             if (JSON.parse(request.response)["json_map"]["cloud_map"].length === 0){
-                document.getElementById("response").innerHTML = "Something went wrong, please check your chat-id";
+                document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id</i>";
             }else{
                 document.getElementById("response").innerHTML = responseHtml;
             }
             // do something with jsonResponse
          };
         request.send(formData);
+    }
+}
+
+const get_file = () => {
+    const fileKey = document.getElementById("file_key").value;
+    const request = new XMLHttpRequest();
+    if (fileKey === "" && fileKey.length <= 20){
+        alert("Provide a file_key to get a download file link !")
+    }else{
+        request.open("GET", "/api/download/"+ fileKey);
+        request.onload  = function() {
+            console.log(request.response)
+            const responseHtml = `
+                    <br/><b>- File_key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
+                    <br/><b>- Download-link :</b> <a href='${JSON.parse(request.response)["download_link"]}' target='_blank'>Click here to download the file</a>`;
+            if (typeof JSON.parse(request.response)["download_link"] === "undefined"){
+                document.getElementById("response2").innerHTML = "<i style='color: red;'>Something went wrong, please check your file-key.</i>";
+            }else{
+                document.getElementById("response2").innerHTML = responseHtml;
+            }
+        }
+        request.send(null);
     }
 }
