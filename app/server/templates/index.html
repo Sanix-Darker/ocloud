@@ -9,26 +9,26 @@
         <title>OgramCloud</title>
     </head>
     <body>
-        <div style="width: 100%;height: 100vh;">
+        <div class="main">
             <div class="col-md-9 index_left">
                 <img src="./static/img/cloud.png"/>
 
-                <h1 class="title_left">
-                    OgramCloud.
-                </h1>
-                Transform your Telegram-Account to a Free Storage server, no SIGN IN/UP, completely FREE !
+                <h1 class="title_left">OgramCloud.</h1>
+                Transform your Telegram-Account to a Free Storage server, no SIGNIN/UP, completely FREE !
             </div>
             <div class="col-md-3 index_right">
                 <div>
-                    <img src="./static/img/files.png" style="margin-bottom: 15%;width: 50%;"/>
-                    <br/>
-                    <input type="text" class="form-control col-md-12" autofocus style="margin-bottom: 5%;" name="chat_id" placeholder="Enter your chat-id, from Ogram-Telegram-Bot"/>
-                    <button class="btn btn-primary col-md-12" >OPEN MY SPACE</button>
-                    <br/>
+                    <img src="./static/img/files.png"/><br/>
+                    <input type="text" 
+                            id="chat_id" 
+                            class="form-control col-md-8" 
+                            style="margin-bottom: 5%;" 
+                            autofocus name="chat_id" 
+                            placeholder="Enter your chat-id, from Ogram-Telegram-Bot"/>
+                    <button class="btn btn-primary col-md-4" >OPEN MY SPACE</button><br/>
                     <div style="width: 100%; margin-top: 1rem;">
-                        <a href="https://t.me/omega_gram_bot" target="_blank" style="text-align: left;float: left;">Get your chat-id !</a>
-
-                        <label style="float: right;cursor: pointer;">
+                        <a href="https://t.me/omega_gram_bot" target="_blank" class="link">Get your chat-id !</a>
+                        <label class="remember_me">
                             <input type="checkbox" name="" id="">
                             Remember me
                         </label>

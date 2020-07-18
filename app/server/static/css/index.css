@@ -1,7 +1,4 @@
-body{
-    /* background-image: url('../img/files.png');
-    background-size: 50px; */
-}
+
 .index_left{
     color: white;
     text-align: center;
@@ -16,15 +13,37 @@ body{
     margin-bottom: 5%;
 }
 
+.index_right img{
+    margin-bottom: 15%;
+    width: 50%;
+}
+
 .index_right{
     text-align: center;
     padding-top: 23.5%;
+}
+
+.remember_me, .link{
+    cursor: pointer;
+}
+
+.link{
+    float: left;
+}
+
+.remember_me{
+    float: right;
 }
 
 .title_left{
     font-size: 50px;
     font-weight: bold;
     text-shadow: 0 3px 5px rgba(0,0,0,0.34);
+}
+
+.main{
+    width: 100%;
+    height: 100vh;
 }
 
 /* On screens that are 992px or less, set the background color to blue */
