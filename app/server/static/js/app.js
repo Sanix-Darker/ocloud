@@ -22,8 +22,8 @@ const send_file = () => {
         request.open("POST", "/api/upload");
         request.onload  = function() {
             const responseHtml = `
-                    <b>- File_name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
-                    <br/><b>- File_key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
+                    <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
+                    <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
                     <br/><b>- Chunks :</b> ${JSON.parse(request.response)["json_map"]["cloud_map"].length}
                     <br/><b>- Timestamp :</b> ${new Date().toUTCString()} <br/>`;
             if (JSON.parse(request.response)["json_map"]["cloud_map"].length === 0){
@@ -43,12 +43,14 @@ const get_file = () => {
     if (fileKey === "" && fileKey.length <= 20){
         alert("Provide a file_key to get a download file link !")
     }else{
+        document.getElementById("response2").innerHTML = "Generating the file..."
         request.open("GET", "/api/download/"+ fileKey);
         request.onload  = function() {
             console.log(request.response)
             const responseHtml = `
-                    <br/><b>- File_key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
-                    <br/><b>- Download-link :</b> <a href='${JSON.parse(request.response)["download_link"]}' target='_blank'>Click here to download the file</a>`;
+                    <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
+                    <br/><b>- Download-link :</b> <a href='${JSON.parse(request.response)["download_link"]}' target='_blank'>Click here to download the file</a>
+                    <br/><b>- Node :</b>'All files are deleted 24 hours after creating their download link.'`;
             if (typeof JSON.parse(request.response)["download_link"] === "undefined"){
                 document.getElementById("response2").innerHTML = "<i style='color: red;'>Something went wrong, please check your file-key.</i>";
             }else{

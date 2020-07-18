@@ -66,6 +66,12 @@
     display: block;
 }
 
+.or{
+    width: 100%;
+    margin-top: 5em;
+    text-align: center;
+}
+
 /* On screens that are 992px or less, set the background color to blue */
 @media screen and (max-width: 992px) {
     .index_left{
@@ -96,5 +102,8 @@
     .index_right{
         text-align: center;
         padding-top: 0%;
+    }
+    .or{
+        margin-top: 0.5em;
     }
 }
