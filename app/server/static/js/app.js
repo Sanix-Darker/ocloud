@@ -21,6 +21,7 @@ const send_file = () => {
         formData.append("file", fileElement.files[0]);
         request.open("POST", "/api/upload");
         request.onload  = function() {
+            console.log("[+] res: ", request.response);
             const responseHtml = `
                     <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
                     <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
@@ -46,7 +47,7 @@ const get_file = () => {
         document.getElementById("response2").innerHTML = "Generating the file..."
         request.open("GET", "/api/download/"+ fileKey);
         request.onload  = function() {
-            console.log(request.response)
+            console.log("[+] res: ", request.response);
             const responseHtml = `
                     <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
                     <br/><b>- Download-link :</b> <a href='${JSON.parse(request.response)["download_link"]}' target='_blank'>Click here to download the file</a>
