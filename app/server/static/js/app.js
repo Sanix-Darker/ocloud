@@ -35,22 +35,28 @@ const send_file = () => {
             request.open("POST", "/api/upload");
             request.onload  = function() {
                 console.log("[+] res: ", request.response);
-                const responseHtml = `
-                        <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
-                        <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
-                        <br/><b>- Chunks :</b> ${ObjectLength(JSON.parse(request.response)["json_map"]["file_map"])}
-                        <br/><b>- Timestamp :</b> ${new Date().toUTCString()}
-                        <br/><b>- Node :</b>'Make sure to save that file-key, because it's the only key that will allow you to regenerate your file !'`;
 
-                if(JSON.parse(request.response)["status"] === "error"){
-                    document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id</i>";
+                if(request.status === 403){
+                    alert("Your file is too Large !");
                 }else{
-                    if (ObjectLength(JSON.parse(request.response)["json_map"]["file_map"]) <= 0){
-                        document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id</i>";
+                    const responseHtml = `
+                            <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
+                            <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
+                            <br/><b>- Chunks :</b> ${ObjectLength(JSON.parse(request.response)["json_map"]["file_map"])}
+                            <br/><b>- Timestamp :</b> ${new Date().toUTCString()}
+                            <br/><b>- Node :</b>'Make sure to save that file-key, because it's the only key that will allow you to regenerate your file !'`;
+    
+                    if(JSON.parse(request.response)["status"] === "error"){
+                        document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id and your file</i>";
                     }else{
-                        document.getElementById("response").innerHTML = responseHtml;
+                        if (ObjectLength(JSON.parse(request.response)["json_map"]["file_map"]) <= 0){
+                            document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id and your file</i>";
+                        }else{
+                            document.getElementById("response").innerHTML = responseHtml;
+                        }
                     }
                 }
+                
              };
             request.send(formData);
         }
