@@ -1,10 +1,16 @@
 <p align="center">
   <img src="./images/logo.jpg" />
 
-  <h1>Ogram</h1>
-
-  A Tricky-Hack to use Telegram-servers as free "INFINITE-STORAGE-API" !
-  <img src="./images/demo.png" />
+  <h1>OgramCloud</h1>
+  A Tricky-Hack to use Telegram-servers as free "FREE-STORAGE-API" !
+  <table>
+      <tr>
+         <td><img src="./images/screenshot.png" /></td>
+      </tr>
+      <tr>
+         <td><img src="./images/demo.png" /></td>
+      </tr>
+  </table>
 </p>
 
 ## Links
