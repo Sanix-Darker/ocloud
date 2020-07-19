@@ -2,7 +2,7 @@
     <div style="text-align: center;">
         <img src="./static/img/files.png"/>
     </div>
-    <br/>
+    <h2 id="count" style="text-align: center;">0 files saved.</h3>
     <a href="https://t.me/omega_gram_bot" 
         target="_blank"
         style="width: 100%"
@@ -11,7 +11,7 @@
 
     Save a file : <br>
     <div class="col-md-5" style="padding: 0;">
-        <input type="file" name="file" id="file_id" style="width: 100%;margin-top: 7px;" class="d-none">
+        <input type="file" name="file" id="file_id">
         <br/>
     </div>
     <div class="col-md-1"></div>
@@ -26,34 +26,26 @@
     <button onclick="send_file()" class="btn btn-primary col-md-12" style="width: 100%;">SAVE ON MY TELEGRAM-ACCOUNT</button><br/>
 </div>
 
-<div class="col-md-12" 
-    style="font-size: 11px;max-height: 100px;padding: 0;overflow: auto;text-align: left;" 
-    id="response"></div>
+<div class="col-md-12" id="response"></div>
 
-
-<div class="or">
-    - OR -
-</div>
+<div class="or">- OR -</div>
 
 <div style="text-align: left;">
     Get a file : <br>
     <div class="col-md-12" style="padding: 0;">
         <input type="text" 
                 id="file_key" 
-                class="form-control" 
-                style="margin-bottom: 3%;" 
+                class="form-control"
                 autofocus name="file_key" 
                 placeholder="The file-key here !"/>
     </div>
     <button  onclick="get_file()" class="btn btn-success col-md-12" style="width: 100%;">GENERATE THE DOWNLOAD LINK</button><br/>
 </div>
 
-<div class="col-md-12" 
-    style="font-size: 11px;max-height: 100px;padding: 0;overflow: auto;text-align: left;" 
-    id="response2"></div>
+<div class="col-md-12" id="response2"></div>
 
 <br/><br/><br/>
-<nav style="font-size: 12px;background: white;position: fixed; bottom: 1%;text-align: center;align-self: bottom;">
+<nav class="bottom">
     <a href="http://github.com/sanix-darker/ogramcloud" target="_blank">OgramCoud</a>
      is an experimental Open Source project coded for FUN by <a href="http://github.com/sanix-darker" target="_blank">Sanix-darker</a> !
 </nav>

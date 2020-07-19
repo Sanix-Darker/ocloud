@@ -1,3 +1,4 @@
+const request = new XMLHttpRequest();
 const init = () => {
     var router = new Router([
         new Route('home', './home.html', true),            
@@ -6,6 +7,7 @@ const init = () => {
 }
 init();
 
+// This method will return the number of elements in the object
 const ObjectLength = ( object ) => {
     var length = 0;
     for( var key in object ) {
@@ -16,11 +18,11 @@ const ObjectLength = ( object ) => {
     return length;
 };
 
+// This method is for uploading a file
 const send_file = () => {
     const formData = new FormData();
     const chatId = document.getElementById("chat_id").value;
     const fileElement = document.getElementById("file_id");
-    const request = new XMLHttpRequest();
 
     if (chatId === "" && chatId.length <= 5){
         alert("Provide a valid chat_id to save a file !")
@@ -56,15 +58,16 @@ const send_file = () => {
                         }
                     }
                 }
+                refreshCount();
              };
             request.send(formData);
         }
     }
 }
 
+// This method is for getting a file's download-link
 const get_file = () => {
     const fileKey = document.getElementById("file_key").value;
-    const request = new XMLHttpRequest();
     if (fileKey === "" && fileKey.length <= 20){
         alert("Provide a file_key to get a download file link !")
     }else{
@@ -85,7 +88,21 @@ const get_file = () => {
                     document.getElementById("response2").innerHTML = responseHtml;
                 }
             }
+            refreshCount();
         }
         request.send(null);
     }
 }
+
+// let fetch the numbr of files
+const refreshCount = () => {
+    request.open("GET", "/api/count");
+    request.onload  = function() {
+        console.log("[+] res: ", request.response);
+        document.getElementById("count").innerHTML = JSON.parse(request.response)["count"] + " files saved";
+    }
+    request.send(null);
+};
+setTimeout(() => {
+    refreshCount();
+}, 2000);
