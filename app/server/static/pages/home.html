@@ -1,45 +1,51 @@
-<section class="py-3">
-    <div class="storer-container">
-        <img class="storer" src="./static/img/files.png" />
+<div style="text-align: left;">
+    <div style="text-align: center;">
+        <img src="./static/img/files.png"/>
     </div>
+    <h2 id="count" style="text-align: center;">0 files saved.</h3>
+    <a href="https://t.me/omega_gram_bot" 
+        target="_blank"
+        style="width: 100%"
+        class="btn btn-default col-md-12">Get your chat-id !</a>
+    <br/><hr/>
 
-    <form id="uploadForm" onsubmit="uploadFile(event)">
-        <div id="response"></div>
-        <h3>Save your file</h3>
-        <div class="form-group">
-            <div class="input-group">
-                <input type="text" id="chat_id" class="form-control" autofocus name="chat_id"
-                    placeholder="Enter your chatID">
-                <div class="input-group-append">
-                    <a href="https://t.me/omega_gram_bot" target="_blank" class="btn btn-outline-primary"
-                        type="button">Get your
-                        chatID</a>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="custom-file">
-                <input type="file" name="file" class="custom-file-input" id="file_id" aria-describedby="File to upload">
-                <label class="custom-file-label" for="file_id">Choose file</label>
-            </div>
-        </div>
-        <button type="submit" onclick="uploadFile(event)" class="btn btn-block btn-primary">SAVE</button>
-    </form>
+    Save a file : <br>
+    <div class="col-md-5" style="padding: 0;">
+        <input type="file" name="file" id="file_id">
+        <br/>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-6" style="padding: 0;">
+        <input type="text"
+                id="chat_id" 
+                class="form-control" 
+                style="margin-bottom: 3%;" 
+                autofocus name="chat_id" 
+                placeholder="Your chat-id here !"/>
+    </div>
+    <button onclick="send_file()" class="btn btn-primary col-md-12" style="width: 100%;">SAVE ON MY TELEGRAM-ACCOUNT</button><br/>
+</div>
 
-    <hr>
-    <section>
-        <h3>Generate the download link</h3>
-        <div class="form-group">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" name="file_key" id="file_key"
-                    placeholder="Enter your file key here" aria-label="The file key here"
-                    aria-describedby="enter your file key" autofocus>
-                <div class="input-group-append">
-                    <button onclick="generateDownloadLink()" class="btn btn-outline-primary" type="button"
-                        id="generate">GENERATE</button>
-                </div>
-            </div>
-        </div>
-        <div id="response2"></div>
-    </section>
-</section>
+<div class="col-md-12" id="response"></div>
+
+<div class="or">- OR -</div>
+
+<div style="text-align: left;">
+    Get a file : <br>
+    <div class="col-md-12" style="padding: 0;">
+        <input type="text" 
+                id="file_key" 
+                class="form-control"
+                autofocus name="file_key" 
+                placeholder="The file-key here !"/>
+    </div>
+    <button  onclick="get_file()" class="btn btn-success col-md-12" style="width: 100%;">GENERATE THE DOWNLOAD LINK</button><br/>
+</div>
+
+<div class="col-md-12" id="response2"></div>
+
+<br/><br/><br/>
+<nav class="bottom">
+    <a href="http://github.com/sanix-darker/ogramcloud" target="_blank">OgramCoud</a>
+     is an experimental Open Source project coded for FUN by <a href="http://github.com/sanix-darker" target="_blank">Sanix-darker</a> !
+</nav>
