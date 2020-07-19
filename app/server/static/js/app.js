@@ -35,7 +35,7 @@ const send_file = () => {
             request.open("POST", "/api/upload");
             request.onload  = function() {
                 console.log("[+] res: ", request.response);
-
+                
                 if(request.status === 403){
                     alert("Your file is too Large !");
                 }else{
