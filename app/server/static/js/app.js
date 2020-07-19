@@ -34,11 +34,11 @@ const send_file = () => {
             formData.append("file", fileElement.files[0]);
             request.open("POST", "/api/upload");
             request.onload  = function() {
-                console.log("[+] res: ", request.response);
-                
                 if(request.status === 403){
                     alert("Your file is too Large !");
                 }else{
+                    console.log("[+] res: ", request.response);
+
                     const responseHtml = `
                             <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
                             <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
@@ -56,7 +56,6 @@ const send_file = () => {
                         }
                     }
                 }
-                
              };
             request.send(formData);
         }
