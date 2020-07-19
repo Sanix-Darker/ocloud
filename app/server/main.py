@@ -13,6 +13,9 @@ app.config['Secret'] = "Secret"
 app.config['UPLOAD_FOLDER'] = "./app/server/static/files/"
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
+if not path.exists("./app/server/static/files/"):
+    makedirs("./app/server/static/files/")
+
 
 @app.route("/")
 def index():
@@ -37,8 +40,6 @@ def api():
 @app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
 @cross_origin(supports_credentials=True)
 def apiUpload():
-    if not path.exists("./app/server/static/files/"):
-        makedirs("./app/server/static/files/")
 
     try:
         chat_id = request.form.get("chat_id")
