@@ -2,12 +2,12 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
-from os import path, makedirs, remove
+from os import path, makedirs, remove, listdir
 
 from app.utils import *
 
 app = Flask(__name__)
-CORS(app, support_credentials=True)
+# CORS(app, support_credentials=True)
 
 app.config['Secret'] = "Secret"
 app.config['UPLOAD_FOLDER'] = "./app/server/static/files/"
@@ -16,14 +16,13 @@ app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 if not path.exists("./app/server/static/files/"):
     makedirs("./app/server/static/files/")
 
-
 @app.route("/")
 def index():
     return render_template("index.html");  
 
 
 @app.route('/api/', methods=['GET'])  # To prevent Cors issues
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def api():
     # Build the response
     response = jsonify({
@@ -37,8 +36,21 @@ def api():
     return response
 
 
+@app.route('/api/count', methods=['GET'])  # To prevent Cors issues
+# @cross_origin(supports_credentials=True)
+def cunt_files():
+    # Build the response
+    response = jsonify({
+        'status': 'success',
+        'count': len(listdir("./json_maps/"))
+    })
+    # Let's allow all Origin requests
+    response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
+    return response
+
+
 @app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def apiUpload():
 
     try:
@@ -68,11 +80,15 @@ def apiUpload():
                     json_path = send_file(chat_id, "./app/server/static/files/" + filename)
                     message = 'Your file ' + filename + ' have been saved successfully !'
 
+                json_map_elt = json.loads(open(json_path).read())
+                for cl_map in json_map_elt["cloud_map"]:
+                    del cl_map["tmp_link"]
+
                 response = jsonify({
                     'status': 'success',
                     'message': message,
                     'file_key': json_path.split("/")[-1].split("_")[1].split(".")[0],
-                    'json_map': json.loads(open(json_path).read())
+                    'json_map': json_map_elt
                 })
                 # We delete the original file
                 remove("./app/server/static/files/" + filename)
@@ -96,7 +112,7 @@ def apiUpload():
 
 
 @app.route('/api/download/<file_key>', methods=['GET'])  # To prevent Cors issues
-@cross_origin(supports_credentials=True)
+# @cross_origin(supports_credentials=True)
 def apiDownload(file_key):
     json_map_file = "./json_maps/m_" + file_key + ".json"
     if not path.exists(json_map_file):

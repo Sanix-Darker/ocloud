@@ -1,3 +1,4 @@
+const request = new XMLHttpRequest();
 const init = () => {
 	var router = new Router([
 		new Route("home", "./home.html", true),
@@ -136,3 +137,16 @@ const generateDownloadLink = () => {
 			})
 	}
 }
+
+// let fetch the numbr of files
+const refreshCount = () => {
+    request.open("GET", "/api/count");
+    request.onload  = function() {
+        console.log("[+] res: ", request.response);
+        document.getElementById("count").innerHTML = JSON.parse(request.response)["count"] + " files saved";
+    }
+    request.send(null);
+};
+setTimeout(() => {
+    refreshCount();
+}, 2000);
