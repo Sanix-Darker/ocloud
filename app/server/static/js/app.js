@@ -39,7 +39,8 @@ const send_file = () => {
                         <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
                         <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
                         <br/><b>- Chunks :</b> ${ObjectLength(JSON.parse(request.response)["json_map"]["file_map"])}
-                        <br/><b>- Timestamp :</b> ${new Date().toUTCString()} <br/>`;
+                        <br/><b>- Timestamp :</b> ${new Date().toUTCString()}
+                        <br/><b>- Node :</b>'Make sure to save that file-key, because it's the only key that will allow you to regenerate your file !'`;
 
                 if(JSON.parse(request.response)["status"] === "error"){
                     document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id</i>";
@@ -69,7 +70,7 @@ const get_file = () => {
             const responseHtml = `
                     <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
                     <br/><b>- Download-link :</b> <a href='${JSON.parse(request.response)["download_link"]}' target='_blank'>Click here to download the file</a>
-                    <br/><b>- Node :</b>'All files are deleted 24 hours after creating their download link.'`;
+                    <br/><b>- Node :</b>'All files are deleted 24 hours after creating their download link, but you can generate them anytime.'`;
             if(JSON.parse(request.response)["status"] === "error"){
                 document.getElementById("response2").innerHTML = "<i style='color: red;'>Something went wrong, please check your file-key/i>";
             }else{
