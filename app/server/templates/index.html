@@ -1,30 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" href="./static/css/index.css">
-        <link rel="shortcut icon" href="./static/img/favicon.png">
-        <title>OgramCloud</title>
-    </head>
-    <body>
-        <div class="main">
-            <div class="col-md-9 index_left">
-                <img src="./static/img/cloud.png"/>
-        
-                <h1 class="title_left">OgramCloud-Beta1.</h1>
-                Transform your <b>"TELEGRAM"</b> account into a free storage server, without REGISTRATION, completely FREE !
-                <br/><br/>First, get your chat-id from Ogram-Telegram-bot, Second use it to save files(amke sure to always save your file's 'file-key') !
-                <br/>If you want to get your file back, then copy the file-key and generate the download link(all files are deleted all 24h after download-link generated).
-                <br/><br/>Because it's experimental, <b>[Max file-size: <i>100MB</i>]</b>, Have FUN !
-            </div>
-            <div class="col-md-3 index_right">
-                <div id="app"></div>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <link rel="shortcut icon" href="./static/img/favicon.png">
+    <title>OgramCloud</title>
+</head>
+
+<body>
+    <main role="main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 bg-gradient">
+                    <img class="img-fluid" src="./static/img/cloud.png" />
+                    <h1 class="display-1">OgramCloud
+                        <sup><kbd>Beta</kbd></sup>
+                    </h1>
+                    <h2 class="py-4">
+                        Transform your <b class="badge badge-black">TELEGRAM</b> account in a STORAGE server, without
+                        REGISTRATION, and completely FREE !
+                    </h2>
+                    <button type="button" class="btn btn-lg btn-light" data-toggle="modal" data-target="#hiw">
+                        How it works?
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <div id="app"></div>
+                    <footer class="footer py-2">
+                        <div>
+                            <a href="http://github.com/sanix-darker/ogramcloud" target="_blank">OgramCoud</a>
+                            is an experimental Open Source project coded for FUN by
+                            <a href="http://github.com/sanix-darker" target="_blank">Sanix-darker</a>, design
+                            improvements by <a href="https://github.com/iamKael">Ekim Kael</a>
+                        </div>
+                    </footer>
+                </div>
             </div>
         </div>
-        <script src="./static/js/route.js"></script>
-        <script src="./static/js/router.js"></script>
-        <script src="./static/js/app.js"></script>
-    </body>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal fade" id="hiw" tabindex="-1" role="dialog" aria-labelledby="hiwLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body" id="modal_body">
+                    <h3>How it works?</h3>
+                    <hr>
+                    <ol>
+                        <li class="lead">Get your chatID from <a href="https://t.me/omega_gram_bot"
+                                target="_blank">Ogram-Telegram-bot</a></li>
+                        <li class="lead">
+                            Use it to save files
+                        </li>
+                        <p class="alert alert-warning">Make sure to always save your files key ('file-key')</p>
+                        <li class="lead">
+                            To get your file back, then copy the <span class="text-primary">file-key</span>
+                            and
+                            generate the download
+                            link
+                        </li>
+                        <p class="alert alert-danger">All files are deleted all 24h after download-link generated.</p>
+                    </ol>
+
+                    <p class="alert alert-warning">
+                        ⚠︎ Because it's an experimental project, for now you can just store <b>100 Mo</b> of files.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap.native/3.0.0/bootstrap-native.min.js"></script>
+    <script src="./static/js/route.js"></script>
+    <script src="./static/js/router.js"></script>
+    <script src="./static/js/app.js"></script>
+</body>
+
 </html>
