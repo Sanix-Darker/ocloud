@@ -11,7 +11,7 @@ CORS(app, support_credentials=True)
 
 app.config['Secret'] = "Secret"
 app.config['UPLOAD_FOLDER'] = "./app/server/static/files/"
-app.config['MAX_CONTENT_LENGTH'] = 1000 * 1024 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 if not path.exists("./app/server/static/files/"):
     makedirs("./app/server/static/files/")
