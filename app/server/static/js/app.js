@@ -35,7 +35,7 @@ const send_file = () => {
             const responseHtml = `
                     <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
                     <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
-                    <br/><b>- Chunks :</b> ${JSON.parse(request.response)["json_map"]["cloud_map"].length}
+                    <br/><b>- Chunks :</b> ${ObjectLength(JSON.parse(request.response)["json_map"]["file_map"])}
                     <br/><b>- Timestamp :</b> ${new Date().toUTCString()} <br/>`;
             if (ObjectLength(JSON.parse(request.response)["json_map"]["file_map"]) <= 0){
                 document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id</i>";
