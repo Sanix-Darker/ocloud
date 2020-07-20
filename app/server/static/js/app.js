@@ -53,8 +53,8 @@ const showSavedModal = (data = null) => {
             </div>
             <p>
                 <b>Download-link :</b> 
-                <a target="_blank" class="h6 small" href="${location.href + "api/file/" + data.file_key}">
-                    ${location.href + "api/file/" + data.file_key}
+                <a target="_blank" class="h6 small" href="${location.origin + "/api/file/" + data.file_key}">
+                    ${data.file_key}
                 </a>
             </p>
             <section>
@@ -178,9 +178,18 @@ const refreshCount = () => {
     }
     request.send(null);
 };
-setTimeout(() => {
-    // We try to set the precedent OgramCloud chat-id
-    document.getElementById("chat_id").value = localStorage.getItem("chatId")
-    refreshCount();
-    document.getElementById("chat_id").value = localStorage.getItem("chatId");
-}, 2000);
+
+const main = () => {
+    setTimeout(() => {
+        const params = new URLSearchParams(window.location.search)
+        if (typeof params.get('chat_id') !== "undefined" && params.get('chat_id') !== null){
+            localStorage.setItem("chatId", params.get('chat_id'));
+            document.getElementById("chat_id").value = params.get('chat_id');
+        }
+        // We try to set the precedent OgramCloud chat-id
+        document.getElementById("chat_id").value = localStorage.getItem("chatId");
+        refreshCount();
+    }, 1500);
+}
+
+main();
