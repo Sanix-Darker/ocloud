@@ -179,6 +179,8 @@ const refreshCount = () => {
     request.send(null);
 };
 
+
+
 const main = () => {
     setTimeout(() => {
         const params = new URLSearchParams(window.location.search)
@@ -189,6 +191,14 @@ const main = () => {
         // We try to set the precedent OgramCloud chat-id
         document.getElementById("chat_id").value = localStorage.getItem("chatId");
         refreshCount();
+
+        document.getElementById("file_id").onchange = () => {
+            const fileName = document.getElementById("file_id").value.split("\\").pop();
+            const fileLabel = document.querySelector(".custom-file-label");
+            fileLabel.classList.add("selected")
+            fileLabel.innerHTML = fileName;
+        };
+
     }, 1500);
 }
 
