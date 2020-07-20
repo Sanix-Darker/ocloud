@@ -17,7 +17,9 @@ body{
 	background: -moz-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
 	background: linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
 }
-
+.lnk{
+	text-decoration: none;
+}
 .storer-container {
 	text-align: center;
 }
