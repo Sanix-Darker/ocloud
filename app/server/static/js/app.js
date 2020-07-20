@@ -83,6 +83,7 @@ const uploadFile = (event) => {
         if (fileElement.files.length === 0) {
             alert("Provide a file please !")
         } else {
+            document.getElementById("response").style.display = "block"
             document.getElementById("response").innerHTML = "Sending the file..."
             document.getElementById("file_key_output").innerHTML = ""
             // user datas
