@@ -140,6 +140,6 @@ const generateDownloadLink = () => {
 						document.getElementById("response2").innerHTML = responseHtml
 					}
 				}
-			})
+			});
 	}
 }
