@@ -72,16 +72,19 @@ const showSavedModal = (data = null) => {
 
 const uploadFile = (event) => {
 	event.preventDefault()
-    
+    event.target.setAttribute("disabled", "true")
+
     datas = new FormData()
     chatId = document.getElementById("chat_id").value
     const fileElement = document.getElementById("file_id")
 
     if (chatId === "" && chatId.length <= 5) {
         alert("Provide a valid chat_id to save a file !")
+        event.target.removeAttribute("disabled")
     } else {
         if (fileElement.files.length === 0) {
             alert("Provide a file please !")
+            event.target.removeAttribute("disabled")
         } else {
             document.getElementById("response").style.display = "block"
             document.getElementById("response").innerHTML = "Sending the file..."
@@ -105,6 +108,7 @@ const uploadFile = (event) => {
                         alert("[+] Your file is too Large !")
                     } else if (data.status === "success") {
                         showSavedModal(data);
+                        event.target.removeAttribute("disabled")
                         document.getElementById("file_key_output").innerHTML = "File-key: " + data.file_key
                         document.getElementById("response").style.display = "none"
                     } else if (data.status === "error") {
@@ -123,6 +127,7 @@ const uploadFile = (event) => {
                 })
                 .catch(function (error) {
                     console.log("Request failed - ", error)
+                    event.target.removeAttribute("disabled")
                 });
         }
     }
