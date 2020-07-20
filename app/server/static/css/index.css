@@ -20,6 +20,12 @@ body{
 .lnk{
 	text-decoration: none;
 }
+.shadow{
+	box-shadow: 0 4px 7px rgba(0,0,0,0.34);
+}
+.txt-shadow{
+	text-shadow: 0 3px 4px rgba(0,0,0,0.45);
+}
 .storer-container {
 	text-align: center;
 }
