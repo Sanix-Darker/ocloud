@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_file as send_file_flask
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 from os import path, makedirs, remove, listdir
@@ -35,7 +35,6 @@ def api():
     response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
     return response
 
-
 @app.route('/api/count', methods=['GET'])  # To prevent Cors issues
 # @cross_origin(supports_credentials=True)
 def cunt_files():
@@ -47,6 +46,22 @@ def cunt_files():
     # Let's allow all Origin requests
     response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
     return response
+
+
+@app.route('/api/file/<file_key>', methods=['GET'])  # To prevent Cors issues
+# @cross_origin(supports_credentials=True)
+def getFiles(file_key):
+    json_map_file = "./json_maps/m_" + file_key + ".json"
+    if not path.exists(json_map_file):
+        print("[x] This json_map doesn't exist in the server !")
+        # Build the response
+        response = jsonify({'status': 'error',
+                            "file_key": file_key,
+                            'message': "This json_map doesn't exist in the server !"})
+        return response
+    else:
+        file_path = get_file(json_map_file)
+        return send_file_flask(file_path)
 
 
 @app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
@@ -128,8 +143,7 @@ def apiDownload(file_key):
         response = jsonify({'status': 'success',
                             "file_key": file_key,
                             'message': 'file restored successfully !',
-                            'download_link': request.host_url +
-                            saving_path.replace("./", "/").replace("/app/server/", "")})
+                            'download_link': request.host_url + "api/file/" + file_key})
     # Let's allow all Origin requests
     response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
     return response

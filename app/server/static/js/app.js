@@ -7,6 +7,7 @@ const init = () => {
 }
 init();
 
+
 // This method will return the number of elements in the object
 const ObjectLength = ( object ) => {
     var length = 0;
@@ -23,6 +24,8 @@ const send_file = () => {
     const formData = new FormData();
     const chatId = document.getElementById("chat_id").value;
     const fileElement = document.getElementById("file_id");
+    
+    localStorage.setItem("chatId", chatId);
 
     if (chatId === "" && chatId.length <= 5){
         alert("Provide a valid chat_id to save a file !")
@@ -104,5 +107,7 @@ const refreshCount = () => {
     request.send(null);
 };
 setTimeout(() => {
+    // We try to set the precedent OgramCloud chat-id
+    document.getElementById("chat_id").value = localStorage.getItem("chatId")
     refreshCount();
 }, 2000);
