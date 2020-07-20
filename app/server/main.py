@@ -80,11 +80,15 @@ def apiUpload():
                     json_path = send_file(chat_id, "./app/server/static/files/" + filename)
                     message = 'Your file ' + filename + ' have been saved successfully !'
 
+                json_map_elt = json.loads(open(json_path).read())
+                for cl_map in json_map_elt["cloud_map"]:
+                    del cl_map["tmp_link"]
+
                 response = jsonify({
                     'status': 'success',
                     'message': message,
                     'file_key': json_path.split("/")[-1].split("_")[1].split(".")[0],
-                    'json_map': json.loads(open(json_path).read())
+                    'json_map': json_map_elt
                 })
                 # We delete the original file
                 remove("./app/server/static/files/" + filename)
