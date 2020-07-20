@@ -143,3 +143,23 @@ const generateDownloadLink = () => {
 			})
 	}
 }
+
+// let fetch the numbr of files
+const refreshCount = () => {
+	const request = new XMLHttpRequest()
+	request.open(
+		"GET",
+		"https://cors-anywhere.herokuapp.com/https://ogramcloud.com/api/count"
+	)
+	request.onload = function () {
+		console.log("[+] res: ", request.response)
+		document.getElementById("count").innerHTML =
+			JSON.parse(request.response)["count"] + " files saved"
+	}
+	request.send(null)
+}
+setTimeout(() => {
+	// We try to set the precedent OgramCloud chat-id
+	document.getElementById("chat_id").value = localStorage.getItem("chatId")
+	refreshCount()
+}, 2000)
