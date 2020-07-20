@@ -33,7 +33,7 @@ const copy = () => {
 
 const showSavedModal = (data = null) => {
     if (data !== null){
-        savedModalContent = new BSN.Modal("#hiw", {
+        savedModalContent = new BSN.Modal("#res", {
             content: `<div class="modal-body">
             <p class="alert alert-success">
             🎉 ${data.message}<p/>
