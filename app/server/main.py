@@ -61,7 +61,10 @@ def getFiles(file_key):
         return response
     else:
         file_path = get_file(json_map_file)
-        return send_file_flask(file_path)
+        if (path.exists("./app/server/" + file_path)):
+            return send_file_flask(path.join(file_path), as_attachment=True)
+        else:
+            return render_template("refreshing.html")
 
 
 @app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
@@ -70,20 +73,20 @@ def apiUpload():
 
     try:
         chat_id = request.form.get("chat_id")
-        file = request.files['file']
+        file_ = request.files['file']
         response = {}
 
-        if file and chat_id:
-            if file.filename == '':
+        if file_ and chat_id:
+            if file_.filename == '':
                 print('No file selected for uploading !')
                 response = jsonify({'status': 'error', 'message': 'No file selected for uploading !'})
 
             else:
                 print("[+] Uploading file in static !")
-                filename = secure_filename(file.filename)
+                filename = secure_filename(file_.filename)
 
                 message = ""
-                file.save(path.join(app.config['UPLOAD_FOLDER'], filename))
+                file_.save(path.join(app.config['UPLOAD_FOLDER'], filename))
                 json_path = "./json_maps/m_" + \
                             get_md5_sum("./app/server/static/files/" + filename).replace(" ", "").split("/")[-1] + ".json"
 
