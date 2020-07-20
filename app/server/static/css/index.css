@@ -1,132 +1,70 @@
-
-.index_left{
-    color: white;
-    text-align: center;
-    padding: 9% 5% 0% 0%;
-    height: 100%;
-    background: -webkit-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
-    background: -o-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
-    background: -moz-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
-    background: linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
-}
-.index_left img{
-    margin-bottom: 5%;
+.badge-black {
+	background-color: #212529;
+	color: white;
 }
 
-.index_right img{
-    margin-bottom: 8%;
-    width: 50%;
+.bg-gradient {
+	height: 100vh;
+	max-height: auto;
+	color: white;
+	background: -webkit-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+	background: -o-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+	background: -moz-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+	background: linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
 }
 
-.index_right{
-    text-align: center;
-    padding-top: 10%;
+.storer-container {
+	text-align: center;
 }
 
-.remember_me, .link{
-    cursor: pointer;
+.storer {
+	margin: 8% 0;
+	width: 25%;
+	height: auto;
 }
 
-.link{
-    float: left;
+#app {
+	margin-bottom: 85px;
 }
 
-.remember_me{
-    float: right;
+.footer {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	z-index: 99;
+	background-color: #fff;
 }
 
-.title_left{
-    font-size: 50px;
-    font-weight: bold;
-    text-shadow: 0 3px 5px rgba(0,0,0,0.34);
+.footer div {
+	display: flex;
+	flex-wrap: wrap;
 }
 
-.main{
-    width: 100%;
-    height: 100vh;
-}
-
-.btn-file {
-    position: relative;
-    overflow: hidden;
-}
-.btn-file input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 100%;
-    min-height: 100%;
-    font-size: 100px;
-    text-align: right;
-    filter: alpha(opacity=0);
-    opacity: 0;
-    outline: none;
-    background: white;
-    cursor: inherit;
-    display: block;
-}
-
-.or{
-    width: 100%;
-    margin-top: 5em;
-    text-align: center;
-}
-
-#response, #response2{
-    font-size: 11px;
-    max-height: 100px;
-    padding: 0;
-    overflow: auto;
-    text-align: left;
-}
-
-#file_key{
-    margin-bottom: 3%;
-}
-#file_id{
-    width: 100%;
-    margin-top: 7px;
-}
-.bottom{
-    font-size: 12px;
-    background: white;
-    position: fixed;
-    bottom: 1%;
-    text-align: center;
-    align-self: bottom;
-}
-/* On screens that are 992px or less, set the background color to blue */
-@media screen and (max-width: 992px) {
-    .index_left{
-        height: 70%;
-    }
-    .index_right img{
-        display: none;
-    }
-    .index_right{
-        text-align: center;
-        padding-top: 5%;
-    }
-}
-  
 /* On screens that are 600px or less, set the background color to olive */
 @media screen and (max-width: 600px) {
-    .index_left{
-        padding: 5px;
-        padding-top: 30px;
-        height: 70%;
-    }
-    .index_right img{
-        display: none;
-    }
-    .index_left img{
-        width: 100%;
-    }
-    .index_right{
-        text-align: center;
-        padding-top: 0%;
-    }
-    .or{
-        margin-top: 0.5em;
-    }
+	.bg-gradient {
+		padding: 1em;
+	}
+
+	.bg-gradient .display-1 {
+		font-size: 3.9rem;
+		font-weight: 500;
+		line-height: 1.2;
+	}
+	.bg-gradient h2 {
+		font-size: 1.75rem;
+		font-weight: 300;
+	}
+
+	.storer-container {
+		display: none;
+	}
+
+	#app {
+		margin-bottom: 0;
+	}
+
+	.footer {
+		position: relative;
+	}
 }

@@ -1,108 +1,145 @@
-const request = new XMLHttpRequest();
 const init = () => {
-    var router = new Router([
-        new Route('home', './home.html', true),            
-        new Route('app', './app.html')
-    ]);
+	var router = new Router([
+		new Route("home", "./home.html", true),
+		new Route("app", "./app.html"),
+	])
 }
-init();
+init()
 
-// This method will return the number of elements in the object
-const ObjectLength = ( object ) => {
-    var length = 0;
-    for( var key in object ) {
-        if( object.hasOwnProperty(key) ) {
-            ++length;
-        }
-    }
-    return length;
-};
-
-// This method is for uploading a file
-const send_file = () => {
-    const formData = new FormData();
-    const chatId = document.getElementById("chat_id").value;
-    const fileElement = document.getElementById("file_id");
-
-    if (chatId === "" && chatId.length <= 5){
-        alert("Provide a valid chat_id to save a file !")
-    }else{
-        if(fileElement.files.length == 0 ){
-            alert("Provide a file please !")
-        }else{
-            document.getElementById("response").innerHTML = "Sending the file..."
-            formData.append("chat_id", chatId);
-            // HTML file input, chosen by user
-            formData.append("file", fileElement.files[0]);
-            request.open("POST", "/api/upload");
-            request.onload  = function() {
-                if(request.status === 403){
-                    alert("Your file is too Large !");
-                }else{
-                    console.log("[+] res: ", request.response);
-
-                    const responseHtml = `
-                            <b>- File-name :</b> <i style="color: #0069ff;">${JSON.parse(request.response)["json_map"]["file"]["file_name"]}</i>
-                            <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
-                            <br/><b>- Chunks :</b> ${ObjectLength(JSON.parse(request.response)["json_map"]["file_map"])}
-                            <br/><b>- Timestamp :</b> ${new Date().toUTCString()}
-                            <br/><b>- Node :</b>'Make sure to save that file-key, because it's the only key that will allow you to regenerate your file !'`;
-    
-                    if(JSON.parse(request.response)["status"] === "error"){
-                        document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id and your file</i>";
-                    }else{
-                        if (ObjectLength(JSON.parse(request.response)["json_map"]["file_map"]) <= 0){
-                            document.getElementById("response").innerHTML = "<i style='color: red;'>Something went wrong, please check your chat-id and your file</i>";
-                        }else{
-                            document.getElementById("response").innerHTML = responseHtml;
-                        }
-                    }
-                }
-                refreshCount();
-             };
-            request.send(formData);
-        }
-    }
+const ObjectLength = (object) => {
+	var length = 0
+	for (var key in object) {
+		if (object.hasOwnProperty(key)) {
+			++length
+		}
+	}
+	return length
 }
 
-// This method is for getting a file's download-link
-const get_file = () => {
-    const fileKey = document.getElementById("file_key").value;
-    if (fileKey === "" && fileKey.length <= 20){
-        alert("Provide a file_key to get a download file link !")
-    }else{
-        document.getElementById("response2").innerHTML = "Generating the file..."
-        request.open("GET", "/api/download/"+ fileKey);
-        request.onload  = function() {
-            console.log("[+] res: ", request.response);
-            const responseHtml = `
-                    <br/><b>- File-key :</b> <i style="color: red;">${JSON.parse(request.response)["file_key"]}</i>
-                    <br/><b>- Download-link :</b> <a href='${JSON.parse(request.response)["download_link"]}' target='_blank'>Click here to download the file</a>
-                    <br/><b>- Node :</b>'All files are deleted 24 hours after creating their download link, but you can generate them anytime.'`;
-            if(JSON.parse(request.response)["status"] === "error"){
-                document.getElementById("response2").innerHTML = "<i style='color: red;'>Something went wrong, please check your file-key/i>";
-            }else{
-                if (typeof JSON.parse(request.response)["download_link"] === "undefined"){
-                    document.getElementById("response2").innerHTML = "<i style='color: red;'>Something went wrong, please check your file-key.</i>";
-                }else{
-                    document.getElementById("response2").innerHTML = responseHtml;
-                }
-            }
-            refreshCount();
-        }
-        request.send(null);
-    }
+const copy = () => {
+	var fileKey = document.getElementById("fileKey")
+	fileKey.select()
+	fileKey.setSelectionRange(0, 99999)
+	document.execCommand("copy")
+
+	console.log("Copied the text: " + fileKey.value)
 }
 
-// let fetch the numbr of files
-const refreshCount = () => {
-    request.open("GET", "/api/count");
-    request.onload  = function() {
-        console.log("[+] res: ", request.response);
-        document.getElementById("count").innerHTML = JSON.parse(request.response)["count"] + " files saved";
-    }
-    request.send(null);
-};
-setTimeout(() => {
-    refreshCount();
-}, 2000);
+const uploadFile = (event) => {
+	event.preventDefault()
+	event.target.setAttribute("disabled", "true")
+	const datas = new FormData()
+	const chatId = document.getElementById("chat_id").value
+	const fileElement = document.getElementById("file_id")
+
+	if (chatId === "" && chatId.length <= 5) {
+		alert("Provide a valid chat_id to save a file !")
+	} else {
+		if (fileElement.files.length === 0) {
+			alert("Provide a file please !")
+		} else {
+			document.getElementById("response").innerHTML = "Sending the file..."
+			// user datas
+			datas.append("chat_id", chatId)
+			datas.append("file", fileElement.files[0])
+
+			fetch(
+				"https://cors-anywhere.herokuapp.com/https://ogramcloud.com/api/upload",
+				{
+					method: "post",
+					body: datas,
+				}
+			)
+				.then((response) => {
+					return response.json()
+				})
+				.then((data) => {
+					if (data.status === 403) {
+						alert("Your file is too Large !")
+					} else if (data.status === "success") {
+						event.target.setAttribute("disabled", "false")
+						event.target.parentNode.reset()
+						new BSN.Modal("#hiw", {
+							content: `<div class="modal-body">
+                            <p class="alert alert-success">
+                            🎉 ${data.message}<p/>
+                            <p>
+                                <b>File name :</b> 
+                                <span class="text-primary">
+                                    ${data.json_map.file.file_name}
+                                    </span>
+                            </p>
+                            <label for="fileKey"><b>File key : </b></label>
+	                        <div class="input-group input-group-sm mb-3">
+	                            <input type="text" class="form-control"
+	                            value="${data.file_key}" id="fileKey">
+	                            <div class="input-group-append">
+	                            <button type="button" class="btn btn-secondary" onclick="copy()">Copy</button>
+	                            </div>
+	                        </div>
+                            <section>
+                            <b>Chunks :</b> ${data.json_map.cloud_map.length}
+                            </section>
+	                        <section><b>Timestamp :</b> ${new Date().toUTCString()}</section>
+                            <p class="alert alert-warning">Make sure to save that <b>File key</b>, because it's the only key that will allow you to regenerate your file !<p/>
+                                    </div>`,
+							backdrop: true,
+							keyboard: true,
+						}).show()
+						document.getElementById("response").style.display = "none"
+					} else if (data.status === "error") {
+						document.getElementById(
+							"response"
+						).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
+					} else {
+						if (data.json_map.file_map.length <= 0) {
+							document.getElementById(
+								"response"
+							).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
+						} else {
+							document.getElementById("response").innerHTML = responseHtml
+						}
+					}
+				})
+				.catch(function (error) {
+					console.log("Request failed - ", error)
+				})
+		}
+	}
+}
+
+const generateDownloadLink = () => {
+	const fileKey = document.getElementById("file_key").value
+	if (fileKey === "" && fileKey.length <= 20) {
+		alert("Provide a file_key to get a download file link !")
+	} else {
+		document.getElementById("response2").innerHTML = "Generating the file..."
+		fetch(
+			`https://cors-anywhere.herokuapp.com/https://ogramcloud.com/api/download/${fileKey}`
+		)
+			.then((response) => {
+				return response.json()
+			})
+			.then((data) => {
+				if (data.status === "success") {
+					document.getElementById("response2").innerHTML = `
+                        <a href='${data.download_link}' class="btn btn-success btn-block" target='_blank'>⇣ Download your file</a>
+                        <p class="alert alert-warning">All files are deleted 24 hours after the download link is generated, but you can generate them anytime.</p>`
+				} else if (JSON.parse(request.response)["status"] === "error") {
+					document.getElementById(
+						"response2"
+					).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key/i>`
+				} else {
+					if (
+						typeof JSON.parse(request.response)["download_link"] === "undefined"
+					) {
+						document.getElementById(
+							"response2"
+						).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key.</p>`
+					} else {
+						document.getElementById("response2").innerHTML = responseHtml
+					}
+				}
+			});
+	}
+}
