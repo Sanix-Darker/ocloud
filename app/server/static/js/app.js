@@ -159,6 +159,8 @@ const refreshCount = () => {
     request.send(null);
 };
 setTimeout(() => {
+    // We try to set the precedent OgramCloud chat-id
+    document.getElementById("chat_id").value = localStorage.getItem("chatId")
     refreshCount();
     document.getElementById("chat_id").value = localStorage.getItem("chatId");
 }, 2000);
