@@ -1,3 +1,7 @@
+body{
+	overflow: hidden;
+}
+
 .badge-black {
 	background-color: #212529;
 	color: white;
@@ -39,7 +43,9 @@
 	display: flex;
 	flex-wrap: wrap;
 }
-
+#count{
+	text-align: center;
+}
 /* On screens that are 600px or less, set the background color to olive */
 @media screen and (max-width: 600px) {
 	.bg-gradient {
@@ -67,4 +73,8 @@
 	.footer {
 		position: relative;
 	}
+	body{
+		overflow: auto;
+	}
+	
 }

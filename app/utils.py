@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from os import remove
+from os import remove, path
 
 from hashlib import md5
 from app.settings import *
@@ -264,22 +264,26 @@ def get_file(json_map_path):
     """
     print("[+] Start getting the file...")
 
-    # We instantiate the Split class by passing the chunk directory
-    sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/files/")
-
     # We read the json map
     with open(json_map_path, "r") as file_:
         the_map = json.loads(file_.read())
-        # We download all the chunks
-        sp = download_all_chunk(sp, the_map)
+        # We check if the file exists
+        if path.exists(the_map["file"]["file_path"]):
+            return "static/files/" + the_map["file"]["file_name"]
+        else:
+            # We instantiate the Split class by passing the chunk directory
+            sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/files/")
+            
+            # We download all the chunks
+            sp = download_all_chunk(sp, the_map)
 
-        # We rebuild the file
-        saving_path = sp.data_directory + sp.get_map()["file"]["file_name"]
-        sp.rebuild(saving_path)
-        # We check the md5 of the file
-        md5_checker(sp, saving_path)
+            # We rebuild the file
+            saving_path = sp.data_directory + sp.get_map()["file"]["file_name"]
+            sp.rebuild(saving_path)
+            # We check the md5 of the file
+            md5_checker(sp, saving_path)
 
-        print("[+] Your file {} have been successfully rebuilded !".format(saving_path))
+            print("[+] Your file {} have been successfully rebuilded !".format(saving_path))
 
         return saving_path
 

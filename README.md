@@ -52,7 +52,17 @@ python -m app.bot.main
 python -m app.server.main
 ```
 
-**NB: I have limited the upload-size to 100MB as a limit for the APi for tests, but it can be changed !**
+## How to contribute
+
+- Create an issue with your feature/improvement
+- Fork the project
+- create a branch for you feature(Make sure to have the latest master-branch updates)
+- Create a Pull Request to develop branch
+
+If it's working fine and as expected, the administrator will merge it to master !
+
+
+**NB: Because, it's on a Beta version, I have limited the upload-size to 100MB as a limit for the APi for tests per uploads for now!**
 
 ## Author
 

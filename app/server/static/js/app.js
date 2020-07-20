@@ -1,3 +1,5 @@
+const request = new XMLHttpRequest();
+
 const init = () => {
 	var router = new Router([
 		new Route("home", "./home.html", true),
@@ -5,6 +7,7 @@ const init = () => {
 	])
 }
 init()
+
 
 const ObjectLength = (object) => {
 	var length = 0
@@ -31,6 +34,8 @@ const uploadFile = (event) => {
 	const datas = new FormData()
 	const chatId = document.getElementById("chat_id").value
 	const fileElement = document.getElementById("file_id")
+
+    localStorage.setItem("chatId", chatId);
 
 	if (chatId === "" && chatId.length <= 5) {
 		alert("Provide a valid chat_id to save a file !")
@@ -109,11 +114,12 @@ const uploadFile = (event) => {
 }
 
 const generateDownloadLink = () => {
-	const fileKey = document.getElementById("file_key").value
+	const fileKey = document.getElementById("file_key").value;
 	if (fileKey === "" && fileKey.length <= 20) {
 		alert("Provide a file_key to get a download file link !")
 	} else {
 		document.getElementById("response2").innerHTML = "Generating the file..."
+    
 		fetch(`/api/download/${fileKey}`)
 			.then((response) => {
 				return response.json()
@@ -122,7 +128,7 @@ const generateDownloadLink = () => {
 				if (data.status === "success") {
 					document.getElementById("response2").innerHTML = `
                         <a href='${data.download_link}' class="btn btn-success btn-block" target='_blank'>⇣ Download your file</a>
-                        <p class="alert alert-warning">All files are deleted 24 hours after the download link is generated, but you can generate them anytime.</p>`
+                        <p class="alert alert-warning">All files are deleted 24 hours after the download link is generated, but you can generate them anytime using the file-key.</p>`
 				} else if (JSON.parse(request.response)["status"] === "error") {
 					document.getElementById(
 						"response2"
@@ -153,8 +159,10 @@ const refreshCount = () => {
 	}
 	request.send(null)
 }
+
 setTimeout(() => {
-	// We try to set the precedent OgramCloud chat-id
-	document.getElementById("chat_id").value = localStorage.getItem("chatId")
-	refreshCount()
-}, 2000)
+    // We try to set the precedent OgramCloud chat-id
+    document.getElementById("chat_id").value = localStorage.getItem("chatId")
+    refreshCount();
+    document.getElementById("chat_id").value = localStorage.getItem("chatId");
+}, 2000);
