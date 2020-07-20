@@ -1,16 +1,7 @@
-<p align="center">
+<p>
   <img src="./images/logo.jpg" />
-
   <h1>OgramCloud</h1>
-  A Tricky-Hack to use Telegram-servers as free "FREE-STORAGE-API" !
-  <table>
-      <tr>
-         <td><img src="./images/screenshot.png" /></td>
-      </tr>
-      <tr>
-         <td><img src="./images/demo.png" /></td>
-      </tr>
-  </table>
+  Use Telegram-servers as free "CLOUD-STORAGE-SERVER" !
 </p>
 
 ## Links
