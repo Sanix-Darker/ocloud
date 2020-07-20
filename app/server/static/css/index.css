@@ -31,11 +31,16 @@ body{
 	margin-bottom: 85px;
 }
 
+#file_key_output{
+	cursor: pointer;
+}
+
 .footer {
 	position: absolute;
 	width: 100%;
 	bottom: 0;
 	z-index: 99;
+	font-size: 0.7em;
 	background-color: #fff;
 }
 
