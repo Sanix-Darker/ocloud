@@ -8,6 +8,7 @@ body{
 }
 
 .bg-gradient {
+	padding-top: 1em;
 	height: 100vh;
 	max-height: auto;
 	color: white;
