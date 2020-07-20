@@ -43,13 +43,10 @@ const uploadFile = (event) => {
 			datas.append("chat_id", chatId)
 			datas.append("file", fileElement.files[0])
 
-			fetch(
-				"https://cors-anywhere.herokuapp.com/https://ogramcloud.com/api/upload",
-				{
-					method: "post",
-					body: datas,
-				}
-			)
+			fetch("/api/upload", {
+				method: "post",
+				body: datas,
+			})
 				.then((response) => {
 					return response.json()
 				})
@@ -57,10 +54,13 @@ const uploadFile = (event) => {
 					if (data.status === 403) {
 						alert("Your file is too Large !")
 					} else if (data.status === "success") {
-						event.target.setAttribute("disabled", "false")
+						event.target.removeAttribute("disabled")
 						event.target.parentNode.reset()
 						new BSN.Modal("#hiw", {
 							content: `<div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							    <span aria-hidden="true">&times;</span>
+							</button>
                             <p class="alert alert-success">
                             🎉 ${data.message}<p/>
                             <p>
@@ -83,8 +83,8 @@ const uploadFile = (event) => {
 	                        <section><b>Timestamp :</b> ${new Date().toUTCString()}</section>
                             <p class="alert alert-warning">Make sure to save that <b>File key</b>, because it's the only key that will allow you to regenerate your file !<p/>
                                     </div>`,
-							backdrop: true,
-							keyboard: true,
+							backdrop: false,
+							keyboard: false,
 						}).show()
 						document.getElementById("response").style.display = "none"
 					} else if (data.status === "error") {
@@ -114,9 +114,7 @@ const generateDownloadLink = () => {
 		alert("Provide a file_key to get a download file link !")
 	} else {
 		document.getElementById("response2").innerHTML = "Generating the file..."
-		fetch(
-			`https://cors-anywhere.herokuapp.com/https://ogramcloud.com/api/download/${fileKey}`
-		)
+		fetch(`/api/download/${fileKey}`)
 			.then((response) => {
 				return response.json()
 			})
@@ -140,17 +138,14 @@ const generateDownloadLink = () => {
 						document.getElementById("response2").innerHTML = responseHtml
 					}
 				}
-			});
+			})
 	}
 }
 
 // let fetch the numbr of files
 const refreshCount = () => {
 	const request = new XMLHttpRequest()
-	request.open(
-		"GET",
-		"https://cors-anywhere.herokuapp.com/https://ogramcloud.com/api/count"
-	)
+	request.open("GET", "/api/count")
 	request.onload = function () {
 		console.log("[+] res: ", request.response)
 		document.getElementById("count").innerHTML =
