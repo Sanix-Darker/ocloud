@@ -44,7 +44,7 @@ source venv/bin/activate
 ```shell script
 python -m app.bot.main
 ```
-The Ogram Telegram-bot is on another repo [OgramBot](https://github.com/ogrambot)
+The Ogram Telegram-bot is on another repo [OgramBot](https://github.com/sanix-darker/ogrambot)
 
 - You need to start the rest-api of Ogram on a new terminal too :
 ```shell script
