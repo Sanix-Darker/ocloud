@@ -7,6 +7,10 @@ body{
 	color: white;
 }
 
+.cloudimg{
+	max-width: 43%;
+}
+
 #response, #response2{
     font-size: 10px;
     font-style: italic;
@@ -95,5 +99,7 @@ body{
 	body{
 		overflow: auto;
 	}
-	
+	.cloudimg{
+		max-width: 100%;
+	}
 }
