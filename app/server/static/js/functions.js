@@ -110,6 +110,10 @@ const uploadFile = (event) => {
                     method: "post",
                     body: datas,
                 })
+                then(res => {
+                    consume(res.body.getReader())
+                    console.log(res.body.getReader())
+                })
                 .then((response) => {
                     return response.json()
                 })
