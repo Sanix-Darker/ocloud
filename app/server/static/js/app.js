@@ -20,7 +20,7 @@ const main = () => {
             fileLabel.classList.add("selected")
             fileLabel.innerHTML = fileName;
         };
-    }, 700);
+    }, 1700);
 }
 
 main();
