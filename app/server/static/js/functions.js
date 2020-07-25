@@ -42,33 +42,35 @@ const showSavedModal = (data = null) => {
     if (data !== null){
         savedModalContent = new BSN.Modal("#res", {
             content: `<div class="modal-body">
-            <p class="alert alert-success">
-            🎉 ${data.message}<p/>
-            <p>
-                <b>File name :</b> 
-                <span class="text-primary">
-                    ${data.json_map.file.file_name}
-                    </span>
-            </p>
-            <label for="fileKey"><b>File key : </b></label>
-            <div class="input-group input-group-sm mb-3">
-                <input type="text" class="form-control"
-                value="${data.file_key}" id="fileKey">
-                <div class="input-group-append">
-                <button type="button" class="btn btn-secondary" onclick="copy()">Copy</button>
-                </div>
-            </div>
-            <p>
-                <b>Download-link :</b> 
-                <a target="_blank" class="h6 small" href="${location.origin + "/api/file/" + data.file_key}">
-                    ${data.file_key}
-                </a>
-            </p>
-            <section>
-                <b>Chunks :</b> ${data.json_map.cloud_map.length}
-            </section>
-            <section><b>Timestamp :</b> ${new Date().toUTCString()}</section>
-            <p class="alert alert-warning">Make sure to save that <b>File key</b>, because it's the only key that will allow you to regenerate your file !<p/>
+                        <p class="alert alert-success">
+                        🎉 ${data.message}<p/>
+                        <p>
+                            <b>FileName :</b> 
+                            <span class="text-primary">
+                                ${data.json_map.file.file_name}
+                            </span>
+                        </p>
+                        <div class="input-group input-group-sm mb-3">
+                            <label for="fileKey">
+                                <b>FileKey &nbsp; </b>
+                            </label>
+                            <input type="text" class="form-control" value="${data.file_key}" id="fileKey">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary" onclick="copy()">Copy</button>
+                            </div>
+                        </div>
+                        
+                        <p>
+                            <b>DownloadLink :</b> 
+                            <a target="_blank" class="h6 small" href="${location.origin + "/api/file/" + data.file_key}">
+                                ${location.origin + "/api/file/" + data.file_key}
+                            </a>
+                        </p>
+                        <section>
+                            <b>Chunks :</b> ${data.json_map.cloud_map.length}
+                        </section>
+                        <section><b>Timestamp :</b> ${new Date().toUTCString()}</section>
+                        <p class="alert alert-warning">Make sure to save that <b>File key</b>, because it's the only key that will allow you to regenerate your file !<p/>
                     </div>`,
             backdrop: true,
             keyboard: true,
