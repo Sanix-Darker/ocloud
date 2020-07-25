@@ -110,10 +110,6 @@ const uploadFile = (event) => {
                     method: "post",
                     body: datas,
                 })
-                then(res => {
-                    consume(res.body.getReader())
-                    console.log(res.body.getReader())
-                })
                 .then((response) => {
                     return response.json()
                 })
@@ -123,7 +119,7 @@ const uploadFile = (event) => {
                     } else if (data.status === "success") {
                         showSavedModal(data);
                         event.target.removeAttribute("disabled")
-                        document.getElementById("file_key_output").innerHTML = "File-key: " + data.file_key
+                        document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + "</kbd>" 
                         document.getElementById("response").style.display = "none"
                     } else if (data.status === "error") {
                         document.getElementById(
@@ -141,7 +137,7 @@ const uploadFile = (event) => {
                 })
                 .catch((error) => {
                     console.log("Request failed - ", error)
-                    alert("An error occur, please try again later !");
+                    alert("An error occur, make sure to follow requirements !");
                     document.getElementById("response").style.display = "none"
                     event.target.removeAttribute("disabled")
                 });
@@ -184,7 +180,7 @@ const generateDownloadLink = () => {
 				}
 			}).catch((error) => {
                 console.log("Request failed - ", error)
-                alert("An error occur, please try again later !");
+                alert("An error occur, make sure to follow requirements !");
             });
 	}
 }
