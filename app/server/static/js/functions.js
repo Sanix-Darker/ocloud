@@ -120,7 +120,7 @@ const uploadFile = (event) => {
                 } else if (data.status === "success") {
                     showSavedModal(data);
                     event.target.removeAttribute("disabled")
-                    document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + "</kbd>" 
+                    document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + " | Click for details.</kbd>" 
                     document.getElementById("response").style.display = "none"
                 } else if (data.status === "error") {
                     document.getElementById(
