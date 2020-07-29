@@ -59,7 +59,6 @@ const showSavedModal = (data = null) => {
                                 <button type="button" class="btn btn-secondary" onclick="copy()">Copy</button>
                             </div>
                         </div>
-                        
                         <p>
                             <b>DownloadLink :</b> 
                             <a target="_blank" class="h6 small" href="${location.origin + "/api/file/" + data.file_key}">
@@ -111,38 +110,38 @@ const uploadFile = (event) => {
             fetch("/api/upload",{
                     method: "post",
                     body: datas,
-                })
-                .then((response) => {
-                    return response.json()
-                })
-                .then((data) => {
-                    if (data.status === 403) {
-                        alert("[+] Your file is too Large !")
-                    } else if (data.status === "success") {
-                        showSavedModal(data);
-                        event.target.removeAttribute("disabled")
-                        document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + "</kbd>" 
-                        document.getElementById("response").style.display = "none"
-                    } else if (data.status === "error") {
+            })
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                if (data.status === 403) {
+                    alert("[+] Your file is too Large !")
+                } else if (data.status === "success") {
+                    showSavedModal(data);
+                    event.target.removeAttribute("disabled")
+                    document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + "</kbd>" 
+                    document.getElementById("response").style.display = "none"
+                } else if (data.status === "error") {
+                    document.getElementById(
+                        "response"
+                    ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
+                } else {
+                    if (data.json_map.file_map.length <= 0) {
                         document.getElementById(
                             "response"
                         ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
                     } else {
-                        if (data.json_map.file_map.length <= 0) {
-                            document.getElementById(
-                                "response"
-                            ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
-                        } else {
-                            document.getElementById("response").innerHTML = responseHtml
-                        }
+                        document.getElementById("response").innerHTML = responseHtml
                     }
-                })
-                .catch((error) => {
-                    console.log("Request failed - ", error)
-                    alert("An error occur, make sure to follow requirements !");
-                    document.getElementById("response").style.display = "none"
-                    event.target.removeAttribute("disabled")
-                });
+                }
+            })
+            .catch((error) => {
+                console.log("Request failed - ", error)
+                alert("An error occur, make sure to follow requirements !");
+                document.getElementById("response").style.display = "none"
+                event.target.removeAttribute("disabled")
+            });
         }
     }
 }
@@ -157,33 +156,33 @@ const generateDownloadLink = () => {
 	} else {
 		document.getElementById("response2").innerHTML = "Generating the file..."
 		fetch(`/api/download/${fileKey}`)
-			.then((response) => {
-				return response.json()
-			})
-			.then((data) => {
-				if (data.status === "success") {
-					document.getElementById("response2").innerHTML = `
-                        <a href='${data.download_link}' class="btn btn-success btn-block" target='_blank'>⇣ Download your file</a>
-                        <p class="alert alert-warning">All files are deleted 24 hours after the download link is generated, but you can generate them anytime using the file-key.</p>`
-				} else if (data.status === "error") {
-					document.getElementById(
-						"response2"
-					).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key/i>`
-				} else {
-					if (
-						typeof data.download_link === "undefined"
-					) {
-						document.getElementById(
-							"response2"
-						).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key.</p>`
-					} else {
-						document.getElementById("response2").innerHTML = responseHtml
-					}
-				}
-			}).catch((error) => {
-                console.log("Request failed - ", error)
-                alert("An error occur, make sure to follow requirements !");
-            });
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            if (data.status === "success") {
+                document.getElementById("response2").innerHTML = `
+                    <a href='${data.download_link}' class="btn btn-success btn-block" target='_blank'>⇣ Download your file</a>
+                    <p class="alert alert-warning">All files are deleted 24 hours after the download link is generated, but you can generate them anytime using the file-key.</p>`
+            } else if (data.status === "error") {
+                document.getElementById(
+                    "response2"
+                ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key/i>`
+            } else {
+                if (
+                    typeof data.download_link === "undefined"
+                ) {
+                    document.getElementById(
+                        "response2"
+                    ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key.</p>`
+                } else {
+                    document.getElementById("response2").innerHTML = responseHtml
+                }
+            }
+        }).catch((error) => {
+            console.log("Request failed - ", error)
+            alert("An error occur, make sure to follow requirements !");
+        });
 	}
 }
 
