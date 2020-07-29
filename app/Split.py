@@ -81,25 +81,24 @@ class Split:
             print("[+] Rebuild started...")
 
             if not path.exists(self.data_directory):
-                print("[+] Creating the datas dir")
                 makedirs(self.data_directory)
 
             try:
-                file_content_string = ""
-                for i in range(0, len(map_)):
-                    file_content_string += open(self.chunks_directory + map_[i], "r").read()
+                ff = bytes()
+                for chk in map_:
+                    cmp_path = self.chunks_directory + map_[chk]
+                    with open(cmp_path, 'rb') as f:
+                        ff += f.read()
                     if delete_residuals:
-                        remove(self.chunks_directory + map_[i])
-                file_content = b64.b64decode(file_content_string)
-                with open(final_path, "wb") as f:
-                    f.write(file_content)
+                        remove(cmp_path)
+                with open(final_path, 'wb') as infile:
+                    infile.write(ff)
                 print("[+] Remake done.")
             except Exception as e:
-                print(e)
-                print("[+] Remake went wrong.")
+                print("[+] Remake went wrong, ", e)
         except Exception as es:
-            print(es)
-            print("[+] Something went wrong, verify the path of your JSON map")
+            print("[+] Something went wrong, verify the path of your JSON map, ", es)
+
 
     def write_json_map(self, file_name):
         """
@@ -119,37 +118,29 @@ class Split:
         """
             This method decompose the file
         """
+        # We check if the directory chunks doesn't exist, then, we create it
+        if not path.exists(self.chunks_directory):
+            makedirs(self.chunks_directory)
+
+        re_size = {}
         print("[+] Decompose started...")
-        with open(file_name, "rb") as image_file:
+        with open(file_name, 'rb') as infile:
+            divide = self.divide(str(infile.read()).replace("b'", "").replace("'", ""))
+            re_size = self.verify_size_content(divide)
 
-            # We check if the directory chunks doesn't exist, then, we create it
-            if not path.exists(self.chunks_directory):
-                makedirs(self.chunks_directory)
-
-            to_print = b64.b64encode(image_file.read()).decode('utf-8')
-            re_size = self.verify_size_content(self.divide(len(to_print)))
-
+        with open(file_name, 'rb') as infile:
             i = 0
-            print("\n[+] -----------")
-            print("[+] Best divide ratio found !")
-            print("[+] FILENAME : " + str(file_name))
-            print("[+] FILE-SIZE : " + str(len(to_print)))
+            while True:
+                chunk = infile.read(int(re_size['chunk']))
 
-            while to_print:
-                content = to_print[:re_size['chunk']]
-                title = md5(content[:300].encode()).hexdigest()
+                if not chunk: break
+                new_chunk_md5 = md5(chunk).hexdigest()
+                self.map[i] = new_chunk_md5
 
-                self.map[i] = title
-                print("[+] CHUNK : " + title)
-                # Optionnal, to saved the chunks
-                with open(self.chunks_directory + title, "w+") as file_:
-                    file_.write(content)
-                # Optionnal, to saved the chunks
-                to_print = to_print[re_size['chunk']:]
+                with open(self.chunks_directory + new_chunk_md5, "wb") as file_to:
+                    file_to.write(chunk)
                 i += 1
-            print("[+] Decompose done.")
-            # self.write_json_map(file_name)
-            print("[+] -------")
+        print("[+] Decompose done.")
 
 
 if __name__ == "__main__":
