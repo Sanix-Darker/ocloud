@@ -18,6 +18,12 @@
             </div>
         </div>
         <div class="form-group">
+            <div id="upload_progress" style="display: none;">
+                <progress id="progressBar" value="0" max="100" style="width:100%;"></progress>
+                <b id="status_percent"></b>
+                <p id="loaded_n_total"></p>
+            </div>
+
             <div class="custom-file">
                 <input type="file" name="file" class="custom-file-input" id="file_id" aria-describedby="File to upload">
                 <label class="custom-file-label" for="file_id">Choose file</label>
@@ -49,7 +55,9 @@
     <section>
         <center>
             <a target="_blank" 
-                href="https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest">DEVELOPER API</a>
+                href="https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest">
+                DEVELOPER API DOCUMENTATION
+            </a>
         </center>
     </section>
 </section>

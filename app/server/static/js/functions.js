@@ -34,6 +34,55 @@ const copy = () => {
 	document.execCommand("copy");
 }
 
+const progressHandler = (event) => {
+    document.getElementById("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
+    var percent = (event.loaded / event.total) * 100;
+    document.getElementById("progressBar").value = Math.round(percent);
+    document.getElementById("status_percent").innerHTML = Math.round(percent) + "% uploaded... please wait";
+
+    if (Math.round(percent) == 100){
+        document.getElementById("status_percent").innerHTML = document.getElementById("status_percent").innerHTML.replace("... please wait", ", processing...")
+    }
+}
+  
+const completeHandler = (event) => {
+    document.getElementById("progressBar").value = 0; //wil clear progress bar after successful upload
+    
+    var data = JSON.parse(event.target.responseText);
+    if (data.status === 403) {
+        alert("[+] Your file is too Large !")
+    } else if (data.status === "success") {
+        showSavedModal(data);
+        document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + " | Click for details.</kbd>" 
+        document.getElementById("response").style.display = "none"
+    } else if (data.status === "error") {
+        document.getElementById(
+            "response"
+        ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
+    } else {
+        if (data.json_map.file_map.length <= 0) {
+            document.getElementById(
+                "response"
+            ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
+        } else {
+            document.getElementById("response").innerHTML = responseHtml
+        }
+    }
+    document.getElementById("upload_progress").style.display = "none";
+}
+  
+const errorHandler = (event) => {
+    document.getElementById("status_percent").innerHTML = "Upload Failed";
+
+    alert("An error occur, make sure to follow requirements !");
+    document.getElementById("response").style.display = "none"
+}
+  
+const abortHandler = (event) => {
+    document.getElementById("status_percent").innerHTML = "Upload Aborted";
+}
+
+
 /**
  * 
  * @param {*} data 
@@ -84,7 +133,6 @@ const showSavedModal = (data = null) => {
  */
 const uploadFile = (event) => {
 	event.preventDefault()
-    event.target.setAttribute("disabled", "true")
 
     datas = new FormData()
     chatId = document.getElementById("chat_id").value
@@ -92,14 +140,14 @@ const uploadFile = (event) => {
 
     if (chatId === "" && chatId.length <= 5) {
         alert("Provide a valid chat_id to save a file !")
-        event.target.removeAttribute("disabled")
     } else {
         if (fileElement.files.length === 0) {
             alert("Provide a file please !")
-            event.target.removeAttribute("disabled")
         } else {
             document.getElementById("response").style.display = "block"
             document.getElementById("response").innerHTML = "Sending the file..."
+            document.getElementById("upload_progress").style.display = "block"
+            
             document.getElementById("file_key_output").innerHTML = ""
             // user datas
             datas.append("chat_id", chatId)
@@ -107,41 +155,14 @@ const uploadFile = (event) => {
 
             localStorage.setItem("chatId", chatId);
 
-            fetch("/api/upload",{
-                    method: "post",
-                    body: datas,
-            })
-            .then((response) => {
-                return response.json()
-            })
-            .then((data) => {
-                if (data.status === 403) {
-                    alert("[+] Your file is too Large !")
-                } else if (data.status === "success") {
-                    showSavedModal(data);
-                    event.target.removeAttribute("disabled")
-                    document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + " | Click for details.</kbd>" 
-                    document.getElementById("response").style.display = "none"
-                } else if (data.status === "error") {
-                    document.getElementById(
-                        "response"
-                    ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
-                } else {
-                    if (data.json_map.file_map.length <= 0) {
-                        document.getElementById(
-                            "response"
-                        ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your chat-id and your file</p>`
-                    } else {
-                        document.getElementById("response").innerHTML = responseHtml
-                    }
-                }
-            })
-            .catch((error) => {
-                console.log("Request failed - ", error)
-                alert("An error occur, make sure to follow requirements !");
-                document.getElementById("response").style.display = "none"
-                event.target.removeAttribute("disabled")
-            });
+            var ajax = new XMLHttpRequest();
+            ajax.upload.addEventListener("progress", progressHandler, false);
+            ajax.addEventListener("load", completeHandler, false);
+            ajax.addEventListener("error", errorHandler, false);
+            ajax.addEventListener("abort", abortHandler, false);
+            ajax.open("POST", "/api/upload");
+            ajax.send(datas);
+
         }
     }
 }
