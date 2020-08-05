@@ -26,10 +26,6 @@ Ogram split a file >= 19MB, in multiples chunks and send it throught the Telegra
 - Go to your Telegram Settings > Advanced > Automatic media download and deactive it, that will prevent telegram to automatically download a chunk of a file you're uploading !
 .
 - Update your `example.cofig.txt` file to `config.txt` and provide a valid token if you're using you're personnal bot.
-- Install dependencies:
-```shell
-pip3 install -r requirements.txt
-```
 
 ## How to launch
 
@@ -40,6 +36,10 @@ virtualenv -p python3 venv
 source venv/bin/activate
 ```
 
+- Install dependencies:
+```shell
+pip install -r requirements.txt
+```
 - You need to start the bot First, you can use this command :
 ```shell script
 python -m app.bot.main
