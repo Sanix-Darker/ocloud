@@ -16,7 +16,6 @@ if not path.exists("./app/server/static/files/"):
     makedirs("./app/server/static/files/")
 
 
-
 @app.route("/")
 def index():
     return render_template("index.html");  
@@ -53,6 +52,10 @@ def cunt_files():
 @app.route('/api/file/<file_key>', methods=['GET'])  # To prevent Cors issues
 # @cross_origin(supports_credentials=True)
 def getFiles(file_key):
+
+    if not path.exists("./app/server/static/files/"):
+        makedirs("./app/server/static/files/")
+        
     json_map_file = "./json_maps/m_" + file_key + ".json"
     if not path.exists(json_map_file):
         print("[x] This json_map doesn't exist in the server !")
@@ -74,6 +77,9 @@ def getFiles(file_key):
 def apiUploadChunk():
     chunk = request.files['chunk']
     chat_id = request.form.get("chat_id")
+
+    if not path.exists("./app/server/static/files/"):
+        makedirs("./app/server/static/files/")
 
     try:
         if chunk and chat_id:
@@ -124,6 +130,9 @@ def apiUpload():
         chat_id = request.form.get("chat_id")
         file_ = request.files['file']
         response = {}
+
+        if not path.exists("./app/server/static/files/"):
+            makedirs("./app/server/static/files/")
 
         if file_ and chat_id:
             if file_.filename == '':
