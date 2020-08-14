@@ -6,7 +6,7 @@ from os import path, makedirs, remove, listdir
 from app.utils import *
 
 app = Flask(__name__)
-# CORS(app, support_credentials=True)
+CORS(app, support_credentials=True)
 
 app.config['Secret'] = "Secret"
 app.config['UPLOAD_FOLDER'] = "./app/server/static/files/"
@@ -22,7 +22,7 @@ def index():
 
 
 @app.route('/api/', methods=['GET'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def api():
     # Build the response
     response = jsonify({
@@ -37,7 +37,7 @@ def api():
 
 
 @app.route('/api/count', methods=['GET'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def cunt_files():
     # Build the response
     response = jsonify({
@@ -50,7 +50,7 @@ def cunt_files():
 
 
 @app.route('/api/file/<file_key>', methods=['GET'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def getFiles(file_key):
 
     if not path.exists("./app/server/static/files/"):
@@ -73,7 +73,7 @@ def getFiles(file_key):
 
 
 @app.route('/api/uploadchunk', methods=['POST'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def apiUploadChunk():
     chunk = request.files['chunk']
     chat_id = request.form.get("chat_id")
@@ -124,7 +124,7 @@ def apiUploadChunk():
 
 
 @app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def apiUpload():
     try:
         chat_id = request.form.get("chat_id")
@@ -187,7 +187,7 @@ def apiUpload():
 
 
 @app.route('/api/download/<file_key>', methods=['GET'])  # To prevent Cors issues
-# @cross_origin(supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def apiDownload(file_key):
     json_map_file = "./json_maps/m_" + file_key + ".json"
     if not path.exists(json_map_file):
