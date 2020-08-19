@@ -167,7 +167,9 @@ def send_file(chat_id, file_name):
 
     # We split the file using tth Split module
     # We instantiate the Split class by passing the chunk directory
-    sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/files/")
+    sp = Split(chunks_directory="./chunks/",
+               json_map_directory="./json_maps/",
+               data_directory="./app/server/static/files/")
 
     # We decompose the file in multiple chunks
     sp.decompose(file_name)
@@ -186,7 +188,9 @@ def send_file(chat_id, file_name):
         "file_map": sp.get_map()  # The local json-map of all chunks
     }
 
-    success, failed, final_map = send_all_chunks(chat_id, sp.chunks_directory, final_map, sp.get_map())
+    (success,
+     failed,
+     final_map) = send_all_chunks(chat_id, sp.chunks_directory, final_map, sp.get_map())
 
     # We set the map
     sp.set_map(final_map)
@@ -282,7 +286,9 @@ def get_file(json_map_path):
             return "static/files/" + the_map["file"]["file_name"]
         else:
             # We instantiate the Split class by passing the chunk directory
-            sp = Split(chunks_directory="./chunks/", json_map_directory="./json_maps/", data_directory="./app/server/static/files/")
+            sp = Split(chunks_directory="./chunks/",
+                       json_map_directory="./json_maps/",
+                       data_directory="./app/server/static/files/")
             
             # We download all the chunks
             sp = download_all_chunk(sp, the_map)
@@ -303,6 +309,7 @@ def return_msg(status, message):
         'status': status,
         'message': message
     })
+
 
 def proceed_file(file_, chat_id):
     if file_ and chat_id:

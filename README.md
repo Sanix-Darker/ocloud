@@ -40,11 +40,11 @@ source venv/bin/activate
 ```shell
 pip install -r requirements.txt
 ```
-- You need to start the bot First, you can use this command :
+- The Ogram Telegram-bot is on another repo [OgramBot](https://github.com/sanix-darker/ogrambot)
+You need to start the bot First, you can use this command :
 ```shell script
 python -m app.bot.main
 ```
-The Ogram Telegram-bot is on another repo [OgramBot](https://github.com/sanix-darker/ogrambot)
 
 - You need to start the rest-api of Ogram on a new terminal too :
 ```shell script
@@ -53,12 +53,11 @@ python -m app.server.main
 
 ## How to contribute
 
-- Create an issue with your feature/improvement
-- Fork the project
-- create a branch for you feature(Make sure to have the latest master-branch updates)
-- Create a Pull Request to develop branch
-
-If it's working fine and as expected, the administrator will merge it to master !
+- Create an issue with your feature/improvement (Optionnal but recommended).
+- Fork the project.
+- Create a branch for your feature/update/fix(Make sure to have the latest master-branch updates).
+- Create a Pull Request to develop branch.
+- After a check, it will be verify and merge to the project.
 
 **NB: Because, it's on a Beta version, I have limited the upload-size to 100MB as a limit for the APi for tests per uploads for now!**
 

@@ -45,8 +45,7 @@ def cunt_files():
     return add_headers(response)
 
 
-
-@app.route('/api/file/<file_key>', methods=['GET'])  # To prevent Cors issues
+@app.route('/api/file/<file_key>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def getFiles(file_key):
     try_create_storage_file()
@@ -58,12 +57,11 @@ def getFiles(file_key):
         response = jsonify({'status': 'error',
                             "file_key": file_key,
                             'message': "This json_map doesn't exist in the server !"})
-
         return add_headers(response)
     else:
         try:
             file_path = get_file(json_map_file)
-            if (path.exists("./app/server/" + file_path)):
+            if path.exists("./app/server/" + file_path):
                 return send_file_flask(path.join(file_path), as_attachment=True)
             else:
                 return render_template("refreshing.html")
@@ -87,8 +85,7 @@ def apiUploadChunk():
     return add_headers(response)
 
 
-
-@app.route('/api/upload', methods=['POST'])  # To prevent Cors issues
+@app.route('/api/upload', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def apiUpload():
     response = {}
@@ -97,11 +94,11 @@ def apiUpload():
     try:
         chat_id = request.form.get("chat_id")
         file_ = request.files['file']
-
         response = proceed_file(file_, chat_id)
     except Exception as es:
         print(es)
-        response = return_msg('error', 'Request Entity Too Large: The data value transmitted exceeds the capacity limit !')
+        response = return_msg('error',
+                              'Request Entity Too Large: The data value transmitted exceeds the capacity limit !')
 
     return add_headers(response)
 
@@ -118,13 +115,11 @@ def apiDownload(file_key):
                             'message': "This json_map doesn't exist in the server !"})
     else:
         saving_path = get_file(json_map_file)
-
         # Build the response
         response = jsonify({'status': 'success',
                             "file_key": file_key,
                             'message': 'file restored successfully !',
                             'download_link': request.host_url + "api/file/" + file_key})
-
     return add_headers(response)
 
 
