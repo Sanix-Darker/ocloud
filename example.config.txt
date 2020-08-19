@@ -1,2 +1,3 @@
 [ogram-config]
 TOKEN = ---------------------------------------
+UPLOAD_FOLDER = ----

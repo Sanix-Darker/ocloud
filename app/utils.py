@@ -2,12 +2,21 @@ import requests
 import json
 import time
 from os import remove, path
+from flask import jsonify
+from werkzeug.utils import secure_filename
 
 from hashlib import md5
 from app.settings import *
-
 from app.Split import Split
 
+
+def add_headers(response, status_code=200):
+    response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
+    return response
+
+def try_create_storage_file():
+    if not path.exists("./app/server/static/files/"):
+        makedirs("./app/server/static/files/")
 
 def seconds_elapsed(start):
     """
@@ -238,6 +247,7 @@ def download_all_chunk(sp, the_map):
 def md5_checker(sp, saving_path):
     """
     A simple md5 chekcer to tell if the integrity have been respected
+
     :param sp:
     :param saving_path:
     :return:
@@ -287,6 +297,68 @@ def get_file(json_map_path):
 
         return saving_path
 
+
+def return_msg(status, message):
+    return jsonify({
+        'status': status,
+        'message': message
+    })
+
+def proceed_file(file_, chat_id):
+    if file_ and chat_id:
+        if file_.filename == '':
+            print('[x] No file selected for uploading !')
+            return return_msg('error', 'No file selected for uploading !')
+        else:
+            print("[+] Uploading file in static !")
+            filename = secure_filename(file_.filename)
+            message = ""
+            file_.save(path.join(UPLOAD_FOLDER, filename))
+            json_path = "./json_maps/m_" + get_md5_sum(UPLOAD_FOLDER + filename).replace(" ", "").split("/")[-1] + ".json"
+
+            if path.exists(json_path):
+                # We don't save the file and return the json-map
+                message = 'Your file ' + filename + ' was already saved on telegram servers!'
+            else:
+                # We save the file and return the json-map path
+                json_path = send_file(chat_id, UPLOAD_FOLDER + filename)
+                message = 'Your file ' + filename + ' have been saved successfully !'
+
+            json_map_elt = json.loads(open(json_path).read())
+            for cl_map in json_map_elt["cloud_map"]:
+                del cl_map["tmp_link"]
+
+            # We delete the original file
+            remove(UPLOAD_FOLDER + filename)
+
+            return jsonify({
+                'status': 'success',
+                'message': message,
+                'file_key': json_path.split("/")[-1].split("_")[1].split(".")[0],
+                'json_map': json_map_elt
+            })
+    else:
+        print("[x] Some parameters are missing, check your request again !")
+        return return_msg('error', 'Some parameters are missing, check your request again !')
+
+
+def proceed_chunk(chunk, chat_id):
+    if chunk and chat_id:
+        if chunk.filename == '':
+            print('[x] No file selected for uploading !')
+            return return_msg('error', 'No file selected for uploading !')
+        else:
+            print("[+] Uploading file in static !")
+            filename = secure_filename(chunk.filename)
+            chunk.save(path.join(UPLOAD_FOLDER, filename))
+
+            if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
+                return return_msg('success', 'Your chunk have been seend successfully !')
+            else:
+                return return_msg('error', 'Error, Operation failed, check again your parameters !')
+    else:
+        print("[x] Some parameters are missing, check your request again!")
+        return return_msg('error', 'Some parameters are missing, check your request again !')
 
 # For tests
 # json_path = send_file("267092256", "/home/d4rk3r/Downloads/Telegram Desktop/video_2020-01-07_11-18-13.mp4")

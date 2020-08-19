@@ -15,10 +15,9 @@ const main = () => {
         refreshCount();
 
         document.getElementById("file_id").onchange = () => {
-            const fileName = document.getElementById("file_id").value.split("\\").pop();
             const fileLabel = document.querySelector(".custom-file-label");
             fileLabel.classList.add("selected")
-            fileLabel.innerHTML = fileName;
+            fileLabel.innerHTML = document.getElementById("file_id").value.split("\\").pop();
         };
     }, 1700);
 }

@@ -190,9 +190,7 @@ const generateDownloadLink = () => {
                     "response2"
                 ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key/i>`
             } else {
-                if (
-                    typeof data.download_link === "undefined"
-                ) {
+                if (typeof data.download_link === "undefined") {
                     document.getElementById(
                         "response2"
                     ).innerHTML = `<p class="alert alert-danger">Something went wrong, please check your file-key.</p>`
