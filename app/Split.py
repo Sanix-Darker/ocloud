@@ -37,18 +37,17 @@ class Split:
         self.map = m
 
     def divide(self, val):
-        """[This method have the role on dividing multiple timethe global base64 string to optain the best ratio prime and content]
-
-        Arguments:
-            val {[type]} -- [description]
-
-        Returns:
-            [type] -- [description]
         """
-        ancien_pri = self.maximum_size_per_chunk
-        ancien_chunck = self.maximum_number_of_chunk
+            This method have the role on dividing multiple timethe global base64 string to optain the best ratio prime and content
+        """
+        return {
+            "size": self.maximum_size_per_chunk,
+            "chunk": self.maximum_number_of_chunk
+        }
 
-        return {"size": ancien_pri, "chunk": ancien_chunck}
+    def create_dir(self, dir_):
+        if not path.exists(dir_):
+            makedirs(dir_)
 
     def verify_size_content(self, re_size):
         """
@@ -80,8 +79,7 @@ class Split:
             map_ = {int(k): v for k, v in map_.items()}
             print("[+] Rebuild started...")
 
-            if not path.exists(self.data_directory):
-                makedirs(self.data_directory)
+            self.create_dir(self.data_directory)
 
             try:
                 ff = bytes()
@@ -105,8 +103,7 @@ class Split:
             This method will write on a json map
         """
         # We check if the directory chunks doesn't exist, then, we create it
-        if not path.exists(self.json_map_directory):
-            makedirs(self.json_map_directory)
+        self.create_dir(self.json_map_directory)
 
         json_map_file_name = self.json_map_directory + "m_" + (file_name.replace(" ", "").split("/")[-1]) + ".json"
         with open(json_map_file_name, 'w+') as json_file_map:
@@ -119,8 +116,7 @@ class Split:
             This method decompose the file
         """
         # We check if the directory chunks doesn't exist, then, we create it
-        if not path.exists(self.chunks_directory):
-            makedirs(self.chunks_directory)
+        self.create_dir(self.chunks_directory)
 
         re_size = {}
         print("[+] Decompose started...")
@@ -142,29 +138,28 @@ class Split:
                 i += 1
         print("[+] Decompose done.")
 
+# if __name__ == "__main__":
 
-if __name__ == "__main__":
+#     # Initialize the arguments
+#     # To decompose
+#     # python split.py -m cut -f /path/to/file
+#     # To rebuild your file
+#     # python split.py -m pull -f /path/to/reconstructed_file -j json_map.json
+#     prs = argparse.ArgumentParser()
+#     prs.add_argument('-m', '--mode', help='Split mode (pull/cut or p/c)', type=str)
+#     prs.add_argument('-f', '--file_name', help='File name to be compute (the file to decompose or to rebuild)',
+#                      required=True, type=str)
+#     prs.add_argument('-j', '--json_map', help='Json Map of the file', type=str)
+#     prs = prs.parse_args()
 
-    # Initialize the arguments
-    # To decompose
-    # python split.py -m cut -f /path/to/file
-    # To rebuild your file
-    # python split.py -m pull -f /path/to/reconstructed_file -j json_map.json
-    prs = argparse.ArgumentParser()
-    prs.add_argument('-m', '--mode', help='Split mode (pull/cut or p/c)', type=str)
-    prs.add_argument('-f', '--file_name', help='File name to be compute (the file to decompose or to rebuild)',
-                     required=True, type=str)
-    prs.add_argument('-j', '--json_map', help='Json Map of the file', type=str)
-    prs = prs.parse_args()
+#     # We instantiate and pass the path of the file we ant to split, the debug mode is just to see logs
+#     s = Split()
 
-    # We instantiate and pass the path of the file we ant to split, the debug mode is just to see logs
-    s = Split()
-
-    if prs.mode.lower() == "cut" or prs.mode.lower() == "c":
-        # We decompose the file in multiple chunks
-        s.decompose(prs.file_name)
-    elif (prs.mode.lower() == "pull" or prs.mode.lower() == "p") and prs.json_map is not None:
-        # We rebuild the file
-        s.rebuild(prs.json_map, delete_residuals=True)
-    else:
-        print("[x] Something went wrong, make sure to well provided parameters as specified")
+#     if prs.mode.lower() == "cut" or prs.mode.lower() == "c":
+#         # We decompose the file in multiple chunks
+#         s.decompose(prs.file_name)
+#     elif (prs.mode.lower() == "pull" or prs.mode.lower() == "p") and prs.json_map is not None:
+#         # We rebuild the file
+#         s.rebuild(prs.json_map, delete_residuals=True)
+#     else:
+#         print("[x] Something went wrong, make sure to well provided parameters as specified")

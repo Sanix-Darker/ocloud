@@ -7,3 +7,4 @@ configParser.read(configFilePath)
 
 # Filling parameters
 TOKEN = configParser.get('ogram-config', 'TOKEN')
+UPLOAD_FOLDER = configParser.get('ogram-config', 'UPLOAD_FOLDER')
