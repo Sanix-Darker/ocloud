@@ -1,0 +1,3 @@
+- Migrate to mongoDB storage
+- Add an id for each upoad to identify a user(ip address or something like that)
+- write a backup system for those maps
