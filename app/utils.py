@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from os import remove, path
+from os import remove, path, makedirs
 from flask import jsonify
 from werkzeug.utils import secure_filename
 
