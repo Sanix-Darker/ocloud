@@ -24,9 +24,7 @@ def seconds_elapsed(start):
 
     :return:
     """
-    done = time.time()
-    elapsed = done - start
-    return int(elapsed)
+    return int(time.time() - start)
 
 
 def get_direct_link(file_id):
@@ -41,8 +39,7 @@ def get_direct_link(file_id):
     url2 = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + file_id
 
     try:
-        r2 = requests.get(url2)
-        result2 = json.loads(r2.content.decode())
+        result2 = json.loads(requests.get(url2).content.decode())
         return "https://api.telegram.org/file/bot" + TOKEN + "/" + result2["result"]["file_path"]
     except Exception as es:
         print("[x] An error occured, check your internet connection :", es)
@@ -86,7 +83,6 @@ def send_chunk(chat_id, chunk_name):
 
     if result["ok"]:
         file_id = result["result"]["document"]["file_id"]
-        print("[+] file_id : ", file_id)
 
         # Now we fetch the tempory file path from file_id
         direct_link = get_direct_link(file_id)
@@ -105,8 +101,7 @@ def get_md5_sum(file_name):
     """
     hasher = md5()
     with open(file_name, 'rb') as afile:
-        buf = afile.read()
-        hasher.update(buf)
+        hasher.update(afile.read())
     return hasher.hexdigest()
 
 
@@ -239,8 +234,7 @@ def download_all_chunk(sp, the_map):
             # We need to refresh it
             # Now we fetch the tempory file path from file_id to get a new download_link
             print("[+] Refreshing the direct-link, the tmp_link looks obsolete !")
-            file_id = chk["chunk_id"]
-            chk["tmp_link"] = get_direct_link(file_id)
+            chk["tmp_link"] = get_direct_link(chk["chunk_id"])
 
         # We download the chunk
         download_file(chk["tmp_link"], sp.chunks_directory + chk["chunk_name"])
@@ -260,11 +254,9 @@ def md5_checker(sp, saving_path):
         print("[+] md5_sum checking...")
         print("[+] Local md5 :", sp.get_map()["md5_sum"])
         print("[+] Remote md5 :", get_md5_sum(saving_path))
+        condition = get_md5_sum(saving_path) == sp.get_map()["md5_sum"]
         # We check the md5 sha_sum
-        if get_md5_sum(saving_path) == sp.get_map()["md5_sum"]:
-            print("[+] md5_sum success match !")
-        else:
-            print("[x] md5_sum failed match !")
+        print("[+] md5_sum success match !") if condition else print("[x] md5_sum failed match !")
 
     except Exception as es:
         print("[x] Error when calculating the md5, please check again your file_path", es)
