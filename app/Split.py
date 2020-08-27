@@ -129,11 +129,11 @@ class Split:
             while True:
                 chunk = infile.read(int(re_size['chunk']))
 
-                if not chunk: break
-                new_chunk_md5 = md5(chunk).hexdigest()
-                self.map[i] = new_chunk_md5
+                if not chunk: 
+                    break
+                self.map[i] = md5(chunk).hexdigest()
 
-                with open(self.chunks_directory + new_chunk_md5, "wb") as file_to:
+                with open(self.chunks_directory + self.map[i], "wb") as file_to:
                     file_to.write(chunk)
                 i += 1
         print("[+] Decompose done.")
