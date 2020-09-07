@@ -45,6 +45,27 @@ def cunt_files():
     return add_headers(response)
 
 
+@app.route('/api/checkfile/<file_key>', methods=['GET'])  # To prevent Cors issues
+@cross_origin(supports_credentials=True)
+def check_files(file_key):
+    # Build the response
+    json_file = "m_" + file_key + ".json"
+    if path.exists("./json_maps/" + json_file):
+        file_ = json.loads(open("./json_maps/" + json_file).read())
+        response = {
+            "status": "success",
+            "file_name": file_["file"]["file_name"],
+            "chunks": len(file_["cloud_map"])
+        }
+    else:
+        response = {
+            "status": "error",
+            "message": "This file-key doesn't exist in the server, it can not be regenerated !"
+        }
+
+    return add_headers(jsonify(response))
+
+
 @app.route('/api/file/<file_key>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def getFiles(file_key):
