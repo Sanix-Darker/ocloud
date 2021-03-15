@@ -97,7 +97,6 @@ class Split:
         except Exception as es:
             print("[+] Something went wrong, verify the path of your JSON map, ", es)
 
-
     def write_json_map(self, file_name):
         """
             This method will write on a json map
@@ -129,7 +128,7 @@ class Split:
             while True:
                 chunk = infile.read(int(re_size['chunk']))
 
-                if not chunk: 
+                if not chunk:
                     break
                 self.map[i] = md5(chunk).hexdigest()
 
@@ -137,3 +136,4 @@ class Split:
                     file_to.write(chunk)
                 i += 1
         print("[+] Decompose done.")
+

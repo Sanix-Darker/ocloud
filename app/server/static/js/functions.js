@@ -212,7 +212,7 @@ const refreshCount = () => {
         return response.json()
     }).then(data => {
         console.log("[+] res: ", data);
-        document.getElementById("count").innerHTML = nFormatter(data.count) + " files saved.";
+        document.getElementById("count").innerHTML = nFormatter(data.count) + " objects saved.";
     }).catch(err => {
         console.log(err);
     });
