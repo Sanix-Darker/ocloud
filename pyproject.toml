@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 Flask = "^3.0.2"
-Flask-Cors = "^4.0.0"
+Flask-Cors = "^3.0.9"
 python-dotenv = "^1.0.1"
 requests = "^2.31.0"
 
