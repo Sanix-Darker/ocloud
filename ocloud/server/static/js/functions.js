@@ -25,7 +25,7 @@ const ObjectLength = (object) => {
 }
 
 /**
- * 
+ *
  */
 const copy = () => {
 	var fileKey = document.getElementById("fileKey")
@@ -44,16 +44,16 @@ const progressHandler = (event) => {
         document.getElementById("status_percent").innerHTML = document.getElementById("status_percent").innerHTML.replace("... please wait", ", processing...")
     }
 }
-  
+
 const completeHandler = (event) => {
     document.getElementById("progressBar").value = 0; //wil clear progress bar after successful upload
-    
+
     var data = JSON.parse(event.target.responseText);
     if (data.status === 403) {
         alert("[+] Your file is too Large !")
     } else if (data.status === "success") {
         showSavedModal(data);
-        document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + " | Click for details.</kbd>" 
+        document.getElementById("file_key_output").innerHTML = "<kbd title='Click for details'>FileKey : " + data.file_key + " | Click for details.</kbd>"
         document.getElementById("response").style.display = "none"
     } else if (data.status === "error") {
         document.getElementById(
@@ -70,22 +70,22 @@ const completeHandler = (event) => {
     }
     document.getElementById("upload_progress").style.display = "none";
 }
-  
+
 const errorHandler = (event) => {
     document.getElementById("status_percent").innerHTML = "Upload Failed";
 
     alert("An error occur, make sure to follow requirements !");
     document.getElementById("response").style.display = "none"
 }
-  
+
 const abortHandler = (event) => {
     document.getElementById("status_percent").innerHTML = "Upload Aborted";
 }
 
 
 /**
- * 
- * @param {*} data 
+ *
+ * @param {*} data
  */
 const showSavedModal = (data = null) => {
     if (data !== null){
@@ -94,7 +94,7 @@ const showSavedModal = (data = null) => {
                         <p class="alert alert-success">
                         🎉 ${data.message}<p/>
                         <p>
-                            <b>FileName :</b> 
+                            <b>FileName :</b>
                             <span class="text-primary">
                                 ${data.json_map.file.file_name}
                             </span>
@@ -109,7 +109,7 @@ const showSavedModal = (data = null) => {
                             </div>
                         </div>
                         <p>
-                            <b>DownloadLink :</b> 
+                            <b>DownloadLink :</b>
                             <a target="_blank" class="h6 small" href="${location.origin + "/api/file/" + data.file_key}">
                                 ${location.origin + "/api/file/" + data.file_key}
                             </a>
@@ -128,8 +128,8 @@ const showSavedModal = (data = null) => {
 }
 
 /**
- * 
- * @param {*} event 
+ *
+ * @param {*} event
  */
 const uploadFile = (event) => {
 	event.preventDefault()
@@ -147,7 +147,7 @@ const uploadFile = (event) => {
             document.getElementById("response").style.display = "block"
             document.getElementById("response").innerHTML = "Sending the file..."
             document.getElementById("upload_progress").style.display = "block"
-            
+
             document.getElementById("file_key_output").innerHTML = ""
             // user datas
             datas.append("chat_id", chatId)
@@ -168,7 +168,7 @@ const uploadFile = (event) => {
 }
 
 /**
- * 
+ *
  */
 const generateDownloadLink = () => {
 	const fileKey = document.getElementById("file_key").value;
@@ -176,7 +176,7 @@ const generateDownloadLink = () => {
 		alert("Provide a file_key to get a download file link !")
 	} else {
 		document.getElementById("response2").innerHTML = "Generating the file..."
-		fetch(`/api/download/${fileKey}`)
+		fetch(`/api/file/${fileKey}`)
         .then((response) => {
             return response.json()
         })

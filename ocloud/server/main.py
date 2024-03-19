@@ -91,14 +91,8 @@ def getFiles(file_key):
         )
         return add_headers(response)
     else:
-        try:
-            file_path = get_file(json_map_file)
-            if path.exists("./app/server/" + file_path):
-                return send_file_flask(path.join(file_path), as_attachment=True)
-            else:
-                return render_template("refreshing.html")
-        except Exception:
-            return render_template("refreshing.html")
+        file_path = get_file(json_map_file)
+        return send_file_flask(file_path, as_attachment=True)
 
 
 @app.route("/api/uploadchunk", methods=["POST"])  # To prevent Cors issues
@@ -137,36 +131,6 @@ def apiUpload():
         )
 
     return add_headers(response)
-
-
-@app.route("/api/download/<file_key>", methods=["GET"])  # To prevent Cors issues
-@cross_origin(supports_credentials=True)
-def apiDownload(file_key):
-    json_map_file = "./json_maps/m_" + file_key + ".json"
-    if not path.exists(json_map_file):
-        print("[x] This json_map doesn't exist in the server !")
-        # Build the response
-        response = jsonify(
-            {
-                "status": "error",
-                "file_key": file_key,
-                "message": "This json_map doesn't exist in the server !",
-            }
-        )
-    else:
-        saving_path = get_file(json_map_file)
-        print(f"saving_path: {saving_path}")
-        # Build the response
-        response = jsonify(
-            {
-                "status": "success",
-                "file_key": file_key,
-                "message": "file restored successfully !",
-                "download_link": request.host_url + "api/file/" + file_key,
-            }
-        )
-    return add_headers(response)
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=False, port=9432)
