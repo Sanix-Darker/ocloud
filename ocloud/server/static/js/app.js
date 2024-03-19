@@ -10,7 +10,7 @@ const main = () => {
             localStorage.setItem("chatId", params.get('chat_id'));
             document.getElementById("chat_id").value = params.get('chat_id');
         }
-        // We try to set the precedent OgramCloud chat-id
+        // We try to set the precedent OCloud chat-id
         document.getElementById("chat_id").value = localStorage.getItem("chatId");
         refreshCount();
 

@@ -40,13 +40,13 @@ source venv/bin/activate
 ```shell
 pip install -r requirements.txt
 ```
-- The Ogram Telegram-bot is on another repo [OgramBot](https://github.com/sanix-darker/ogrambot)
+- The OCloud Telegram-bot is on another repo [OgramBot](https://github.com/sanix-darker/obot)
 You need to start the bot First, you can use this command :
 ```shell script
 python -m app.bot.main
 ```
 
-- You need to start the rest-api of Ogram on a new terminal too :
+- You need to start the rest-api of OCloud on a new terminal too :
 ```shell script
 python -m app.server.main
 ```

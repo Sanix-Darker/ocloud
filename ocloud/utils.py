@@ -38,16 +38,12 @@ def get_direct_link(file_id):
     print("[+] Fetching the direct link of the chunk file")
 
     # Now we fetch the tempory file path
-    url2 = "https://api.telegram.org/bot" + TG_TOKEN + "/getFile?file_id=" + file_id
+    url2 = f"https://api.telegram.org/bot{TG_TOKEN}/getFile?file_id={file_id}"
 
     try:
         result2 = json.loads(requests.get(url2).content.decode())
-        return (
-            "https://api.telegram.org/file/bot"
-            + TG_TOKEN
-            + "/"
-            + result2["result"]["file_path"]
-        )
+        file_path = result2["result"]["file_path"]
+        return f"https://api.telegram.org/file/bot{TG_TOKEN}/{file_path}"
     except Exception as es:
         print("[x] An error occured, check your internet connection :", es)
         return None
@@ -62,7 +58,7 @@ def upload_chunk(chat_id, file_name):
     :return:
     """
     print("[+] Uploading the payload")
-    url = "https://api.telegram.org/bot" + TG_TOKEN + "/sendDocument"
+    url = f"https://api.telegram.org/bot{TG_TOKEN}/sendDocument"
     files = {"document": open(file_name, "rb")}
     values = {"chat_id": chat_id}
     r = None
