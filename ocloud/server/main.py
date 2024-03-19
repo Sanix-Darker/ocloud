@@ -93,7 +93,9 @@ def getFiles(file_key):
     else:
         file_path = get_file(json_map_file)
         if path.exists(file_path):
-            return send_file_flask(file_path.replace("./ocloud/server/", ""), as_attachment=True)
+            return send_file_flask(
+                file_path.replace("./ocloud/server/", ""), as_attachment=True
+            )
         else:
             return render_template("refreshing.html")
 
@@ -134,6 +136,7 @@ def apiUpload():
         )
 
     return add_headers(response)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=False, port=9432)

@@ -140,13 +140,11 @@ def download_all_chunk(sp, the_map):
     _LOGGER.info("[+] Fetching chunks...")
     for chk in the_map["cloud_map"]:
         elapsed_time = seconds_elapsed(chk["datetime"])
-        _LOGGER.info("[+] Elapsed_time: ", elapsed_time, "seconds")
+        _LOGGER.info("[+] Elapsed_time: %s seconds", elapsed_time)
         if elapsed_time >= 2000:
             _LOGGER.info("[+] Refreshing the direct-link, the tmp_link looks obsolete !")
             chk["tmp_link"] = get_direct_link(chk["chunk_id"])
-        download_file(
-            chk["tmp_link"], path.join(sp.chunks_directory, chk["chunk_name"])
-        )
+        download_file(chk["tmp_link"], path.join(sp.chunks_directory, chk["chunk_name"]))
     return sp
 
 
@@ -169,21 +167,20 @@ def get_file(json_map_path):
     _LOGGER.info("[+] Start getting the file...")
     with open(json_map_path, "r") as file:
         the_map = json.load(file)
-        if path.exists(the_map["file"]["file_path"]):
+        file_path = the_map["file"]["file_path"]
+        if path.exists(file_path):
             return "static/files/" + the_map["file"]["file_name"]
-        else:
-            sp = Split(
-                chunks_directory="./chunks/",
-                json_map_directory="./json_maps/",
-                data_directory="./ocloud/server/static/files/",
-            )
-            sp = download_all_chunk(sp, the_map)
-            saving_path = sp.data_directory + sp.get_map()["file"]["file_name"]
-            sp.rebuild(saving_path)
-            md5_checker(sp, saving_path)
-            _LOGGER.info(
-                "[+] Your file {} have been successfully rebuilt !".format(saving_path)
-            )
+
+        sp = Split(
+            chunks_directory="./chunks/",
+            json_map_directory="./json_maps/",
+            data_directory="./ocloud/server/static/files/",
+        )
+        sp = download_all_chunk(sp, the_map)
+        saving_path = sp.data_directory + sp.get_map()["file"]["file_name"]
+        sp.rebuild(saving_path)
+        md5_checker(sp, saving_path)
+        _LOGGER.info("[+] Your file {} has been successfully rebuilt !".format(saving_path))
         return saving_path
 
 
@@ -191,66 +188,72 @@ def return_msg(status, message):
     return jsonify({"status": status, "message": message})
 
 
-def proceed_file(file_, chat_id):
-    if file_ and chat_id:
-        if file_.filename == "":
-            _LOGGER.info("[x] No file selected for uploading !")
-            return return_msg("error", "No file selected for uploading !")
-        else:
-            _LOGGER.info("[+] Uploading file in static !")
-            filename = secure_filename(file_.filename)
-            message = ""
-            file_.save(path.join(UPLOAD_FOLDER, filename))
-            json_path = (
-                "./json_maps/m_"
-                + get_md5_sum(UPLOAD_FOLDER + filename).replace(" ", "").split("/")[-1]
-                + ".json"
-            )
-            if path.exists(json_path):
-                message = (
-                    "Your file " + filename + " was already saved on telegram servers!"
-                )
-            else:
-                json_path = send_file(chat_id, UPLOAD_FOLDER + filename)
-                message = "Your file " + filename + " have been saved successfully !"
-            json_map_elt = json.loads(open(json_path).read())
-            for cl_map in json_map_elt["cloud_map"]:
-                del cl_map["tmp_link"]
-            remove(UPLOAD_FOLDER + filename)
-            return jsonify(
-                {
-                    "status": "success",
-                    "message": message,
-                    "file_key": json_path.split("/")[-1].split("_")[1].split(".")[0],
-                    "json_map": json_map_elt,
-                }
-            )
-    else:
+def proceed_file(file_: str, chat_id: str):
+    if not file_ or not chat_id:
         _LOGGER.info("[x] Some parameters are missing, check your request again !")
         return return_msg(
             "error", "Some parameters are missing, check your request again !"
         )
 
+    if file_.filename == "":
+        _LOGGER.info("[x] No file selected for uploading !")
+        return return_msg("error", "No file selected for uploading !")
+
+    _LOGGER.info("[+] Uploading file in static !")
+    filename = secure_filename(file_.filename)
+    file_path = path.join(UPLOAD_FOLDER, filename)
+
+    try:
+        file_.save(file_path)
+    except Exception as e:
+        _LOGGER.error(f"Failed to save the file: {e}")
+        return return_msg("error", "Failed to save the file")
+
+    json_path = (
+        f"./json_maps/m_{get_md5_sum(file_path).replace(' ', '').split('/')[-1]}.json"
+    )
+
+    if path.exists(json_path):
+        message = f"Your file {filename} was already saved on telegram servers!"
+    else:
+        json_path = send_file(chat_id, file_path)
+        message = f"Your file {filename} have been saved successfully !"
+
+    try:
+        json_map_elt = json.loads(open(json_path).read())
+        for cl_map in json_map_elt.get("cloud_map", []):
+            del cl_map["tmp_link"]
+    except Exception as e:
+        _LOGGER.error(f"Failed to process JSON map: {e}")
+        return return_msg("error", "Failed to process JSON map")
+
+    try:
+        os.remove(file_path)
+    except Exception as e:
+        _LOGGER.error(f"Failed to remove the file: {e}")
+        return return_msg("error", "Failed to remove the file")
+
+    return jsonify(
+        {
+            "status": "success",
+            "message": message,
+            "file_key": json_path.split("/")[-1].split("_")[1].split(".")[0],
+            "json_map": json_map_elt,
+        }
+    )
+
 
 def proceed_chunk(chunk, chat_id):
-    if chunk and chat_id:
-        if chunk.filename == "":
-            _LOGGER.info("[x] No file selected for uploading !")
-            return return_msg("error", "No file selected for uploading !")
-        else:
-            _LOGGER.info("[+] Uploading file in static !")
-            filename = secure_filename(chunk.filename)
-            chunk.save(path.join(UPLOAD_FOLDER, filename))
-            if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
-                return return_msg(
-                    "success", "Your chunk have been seend successfully !"
-                )
-            else:
-                return return_msg(
-                    "error", "Error, Operation failed, check again your parameters !"
-                )
+    if not chunk or not chat_id:
+        return return_msg("error", "Some parameters are missing, check your request again!")
+
+    if chunk.filename == "":
+        return return_msg("error", "No file selected for uploading!")
+
+    filename = secure_filename(chunk.filename)
+    chunk.save(path.join(UPLOAD_FOLDER, filename))
+
+    if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
+        return return_msg("success", "Your chunk has been successfully sent!")
     else:
-        _LOGGER.info("[x] Some parameters are missing, check your request again!")
-        return return_msg(
-            "error", "Some parameters are missing, check your request again !"
-        )
+        return return_msg("error", "Error: Operation failed. Please check your parameters.")
