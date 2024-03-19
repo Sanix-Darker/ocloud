@@ -1,4 +1,6 @@
 logs.log
+env
+.env
 .history
 *__pycache__
 *.pyc

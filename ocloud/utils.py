@@ -6,17 +6,19 @@ from flask import jsonify
 from werkzeug.utils import secure_filename
 
 from hashlib import md5
-from app.settings import *
-from app.Split import Split
+from ocloud.Split import Split
+from ocloud.settings import TG_TOKEN, UPLOAD_FOLDER
 
 
 def add_headers(response, status_code=200):
-    response.headers.add('Access-Control-Allow-Origin', '*')  # To prevent Cors issues
+    response.headers.add("Access-Control-Allow-Origin", "*")  # To prevent Cors issues
     return response
+
 
 def try_create_storage_file():
     if not path.exists("./app/server/static/files/"):
         makedirs("./app/server/static/files/")
+
 
 def seconds_elapsed(start):
     """
@@ -36,11 +38,16 @@ def get_direct_link(file_id):
     print("[+] Fetching the direct link of the chunk file")
 
     # Now we fetch the tempory file path
-    url2 = "https://api.telegram.org/bot" + TOKEN + "/getFile?file_id=" + file_id
+    url2 = "https://api.telegram.org/bot" + TG_TOKEN + "/getFile?file_id=" + file_id
 
     try:
         result2 = json.loads(requests.get(url2).content.decode())
-        return "https://api.telegram.org/file/bot" + TOKEN + "/" + result2["result"]["file_path"]
+        return (
+            "https://api.telegram.org/file/bot"
+            + TG_TOKEN
+            + "/"
+            + result2["result"]["file_path"]
+        )
     except Exception as es:
         print("[x] An error occured, check your internet connection :", es)
         return None
@@ -55,13 +62,9 @@ def upload_chunk(chat_id, file_name):
     :return:
     """
     print("[+] Uploading the payload")
-    url = "https://api.telegram.org/bot" + TOKEN + "/sendDocument"
-    files = {
-        'document': open(file_name, 'rb')
-    }
-    values = {
-        'chat_id': chat_id
-    }
+    url = "https://api.telegram.org/bot" + TG_TOKEN + "/sendDocument"
+    files = {"document": open(file_name, "rb")}
+    values = {"chat_id": chat_id}
     r = None
     try:
         r = requests.post(url, files=files, data=values)
@@ -73,7 +76,7 @@ def upload_chunk(chat_id, file_name):
 
 def send_chunk(chat_id, chunk_name):
     """
-        This method will send a file to the chat_id specified
+    This method will send a file to the chat_id specified
     """
     print("[+] ---")
     print("[+] Sending chunk : ", chunk_name)
@@ -100,12 +103,14 @@ def get_md5_sum(file_name):
     :return:
     """
     hasher = md5()
-    with open(file_name, 'rb') as afile:
+    with open(file_name, "rb") as afile:
         hasher.update(afile.read())
     return hasher.hexdigest()
 
 
-def send_all_chunks(chat_id, chunk_dir, final_map, json_map_of_chunks, delete_chunk=True):
+def send_all_chunks(
+    chat_id, chunk_dir, final_map, json_map_of_chunks, delete_chunk=True
+):
     """
 
     :param delete_chunk:
@@ -122,21 +127,17 @@ def send_all_chunks(chat_id, chunk_dir, final_map, json_map_of_chunks, delete_ch
         file_id, dr_link = send_chunk(chat_id, chunk_dir + val)
         if file_id is False:
             # We append the chunk as a failed
-            failed.append({
-                "id": key,
-                "key": val
-            })
+            failed.append({"id": key, "key": val})
         else:
-            success.append({
-                "id": key,
-                "key": val
-            })
-            final_map["cloud_map"].append({
-                "chunk_id": file_id,
-                "chunk_name": val,
-                "tmp_link": dr_link,
-                "datetime": time.time()
-            })
+            success.append({"id": key, "key": val})
+            final_map["cloud_map"].append(
+                {
+                    "chunk_id": file_id,
+                    "chunk_name": val,
+                    "tmp_link": dr_link,
+                    "datetime": time.time(),
+                }
+            )
             # We delete/remove the chunk file if we are supposed to
             if delete_chunk:
                 remove(chunk_dir + val)
@@ -162,9 +163,11 @@ def send_file(chat_id, file_name):
 
     # We split the file using tth Split module
     # We instantiate the Split class by passing the chunk directory
-    sp = Split(chunks_directory="./chunks/",
-               json_map_directory="./json_maps/",
-               data_directory="./app/server/static/files/")
+    sp = Split(
+        chunks_directory="./chunks/",
+        json_map_directory="./json_maps/",
+        data_directory="./app/server/static/files/",
+    )
 
     # We decompose the file in multiple chunks
     sp.decompose(file_name)
@@ -174,18 +177,15 @@ def send_file(chat_id, file_name):
 
     # We build our final map
     final_map = {
-        "file": {
-            "file_path": file_name,
-            "file_name": file_name.split("/")[-1]
-        },
+        "file": {"file_path": file_name, "file_name": file_name.split("/")[-1]},
         "md5_sum": md5_sum,
         "cloud_map": [],  # The cloud json-map of all chunks
-        "file_map": sp.get_map()  # The local json-map of all chunks
+        "file_map": sp.get_map(),  # The local json-map of all chunks
     }
 
-    (success,
-     failed,
-     final_map) = send_all_chunks(chat_id, sp.chunks_directory, final_map, sp.get_map())
+    _, _, final_map = send_all_chunks(
+        chat_id, sp.chunks_directory, final_map, sp.get_map()
+    )
 
     # We set the map
     sp.set_map(final_map)
@@ -205,7 +205,7 @@ def download_file(url, local_filename):
     # NOTE the stream=True parameter below
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
-        with open(local_filename, 'wb') as f:
+        with open(local_filename, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
@@ -256,10 +256,14 @@ def md5_checker(sp, saving_path):
         print("[+] Remote md5 :", get_md5_sum(saving_path))
         condition = get_md5_sum(saving_path) == sp.get_map()["md5_sum"]
         # We check the md5 sha_sum
-        print("[+] md5_sum success match !") if condition else print("[x] md5_sum failed match !")
+        print("[+] md5_sum success match !") if condition else print(
+            "[x] md5_sum failed match !"
+        )
 
     except Exception as es:
-        print("[x] Error when calculating the md5, please check again your file_path", es)
+        print(
+            "[x] Error when calculating the md5, please check again your file_path", es
+        )
 
 
 def get_file(json_map_path):
@@ -278,10 +282,12 @@ def get_file(json_map_path):
             return "static/files/" + the_map["file"]["file_name"]
         else:
             # We instantiate the Split class by passing the chunk directory
-            sp = Split(chunks_directory="./chunks/",
-                       json_map_directory="./json_maps/",
-                       data_directory="./app/server/static/files/")
-            
+            sp = Split(
+                chunks_directory="./chunks/",
+                json_map_directory="./json_maps/",
+                data_directory="./app/server/static/files/",
+            )
+
             # We download all the chunks
             sp = download_all_chunk(sp, the_map)
 
@@ -291,37 +297,44 @@ def get_file(json_map_path):
             # We check the md5 of the file
             md5_checker(sp, saving_path)
 
-            print("[+] Your file {} have been successfully rebuilded !".format(saving_path))
+            print(
+                "[+] Your file {} have been successfully rebuilded !".format(
+                    saving_path
+                )
+            )
 
         return saving_path
 
 
 def return_msg(status, message):
-    return jsonify({
-        'status': status,
-        'message': message
-    })
+    return jsonify({"status": status, "message": message})
 
 
 def proceed_file(file_, chat_id):
     if file_ and chat_id:
-        if file_.filename == '':
-            print('[x] No file selected for uploading !')
-            return return_msg('error', 'No file selected for uploading !')
+        if file_.filename == "":
+            print("[x] No file selected for uploading !")
+            return return_msg("error", "No file selected for uploading !")
         else:
             print("[+] Uploading file in static !")
             filename = secure_filename(file_.filename)
             message = ""
             file_.save(path.join(UPLOAD_FOLDER, filename))
-            json_path = "./json_maps/m_" + get_md5_sum(UPLOAD_FOLDER + filename).replace(" ", "").split("/")[-1] + ".json"
+            json_path = (
+                "./json_maps/m_"
+                + get_md5_sum(UPLOAD_FOLDER + filename).replace(" ", "").split("/")[-1]
+                + ".json"
+            )
 
             if path.exists(json_path):
                 # We don't save the file and return the json-map
-                message = 'Your file ' + filename + ' was already saved on telegram servers!'
+                message = (
+                    "Your file " + filename + " was already saved on telegram servers!"
+                )
             else:
                 # We save the file and return the json-map path
                 json_path = send_file(chat_id, UPLOAD_FOLDER + filename)
-                message = 'Your file ' + filename + ' have been saved successfully !'
+                message = "Your file " + filename + " have been saved successfully !"
 
             json_map_elt = json.loads(open(json_path).read())
             for cl_map in json_map_elt["cloud_map"]:
@@ -330,34 +343,45 @@ def proceed_file(file_, chat_id):
             # We delete the original file
             remove(UPLOAD_FOLDER + filename)
 
-            return jsonify({
-                'status': 'success',
-                'message': message,
-                'file_key': json_path.split("/")[-1].split("_")[1].split(".")[0],
-                'json_map': json_map_elt
-            })
+            return jsonify(
+                {
+                    "status": "success",
+                    "message": message,
+                    "file_key": json_path.split("/")[-1].split("_")[1].split(".")[0],
+                    "json_map": json_map_elt,
+                }
+            )
     else:
         print("[x] Some parameters are missing, check your request again !")
-        return return_msg('error', 'Some parameters are missing, check your request again !')
+        return return_msg(
+            "error", "Some parameters are missing, check your request again !"
+        )
 
 
 def proceed_chunk(chunk, chat_id):
     if chunk and chat_id:
-        if chunk.filename == '':
-            print('[x] No file selected for uploading !')
-            return return_msg('error', 'No file selected for uploading !')
+        if chunk.filename == "":
+            print("[x] No file selected for uploading !")
+            return return_msg("error", "No file selected for uploading !")
         else:
             print("[+] Uploading file in static !")
             filename = secure_filename(chunk.filename)
             chunk.save(path.join(UPLOAD_FOLDER, filename))
 
             if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
-                return return_msg('success', 'Your chunk have been seend successfully !')
+                return return_msg(
+                    "success", "Your chunk have been seend successfully !"
+                )
             else:
-                return return_msg('error', 'Error, Operation failed, check again your parameters !')
+                return return_msg(
+                    "error", "Error, Operation failed, check again your parameters !"
+                )
     else:
         print("[x] Some parameters are missing, check your request again!")
-        return return_msg('error', 'Some parameters are missing, check your request again !')
+        return return_msg(
+            "error", "Some parameters are missing, check your request again !"
+        )
+
 
 # For tests
 # json_path = send_file("267092256", "/home/d4rk3r/Downloads/Telegram Desktop/video_2020-01-07_11-18-13.mp4")
