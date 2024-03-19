@@ -5,6 +5,7 @@ env
 *__pycache__
 *.pyc
 .vcode
+ocloud/server/static/files/
 app/api/__pycache__/
 tests/__pycache__/
 tests/.pytest_cache/

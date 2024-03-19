@@ -8,8 +8,9 @@ from werkzeug.utils import secure_filename
 from hashlib import md5
 from ocloud.Split import Split
 from ocloud.settings import TG_TOKEN, UPLOAD_FOLDER
+import logging
 
-# Constants
+_LOGGER = logging.getLogger(__name__)
 CHUNK_SIZE = 8192
 
 
@@ -37,7 +38,7 @@ def get_direct_link(file_id):
             else None
         )
     except Exception as e:
-        print("[x] An error occurred, check your internet connection:", e)
+        _LOGGER.warning("[x] An error occurred, check your internet connection:", e)
         return None
 
 
@@ -49,7 +50,7 @@ def upload_chunk(chat_id, file_name):
         response = requests.post(url, files=files, data=values)
         return json.loads(response.content.decode())
     except Exception as e:
-        print("[x] An error occurred, check your internet connection:", e)
+        _LOGGER.warning("[x] An error occurred, check your internet connection:", e)
         return None
 
 
@@ -93,13 +94,13 @@ def send_all_chunks(
             )
             if delete_chunk:
                 remove(path.join(chunk_dir, val))
-                print("[+] Local chunk deleted successfully !")
-    print("[+] -------------------------------------------------- ")
-    print("[+] REPORTS !")
-    print("[+] {} Succeed, {} Failed !".format(len(success), len(failed)))
+                _LOGGER.info("[+] Local chunk deleted successfully !")
+    _LOGGER.info("[+] -------------------------------------------------- ")
+    _LOGGER.info("[+] REPORTS !")
+    _LOGGER.info("[+] {} Succeed, {} Failed !".format(len(success), len(failed)))
     for elt in failed:
-        print("[+] {}: {}".format(elt["id"], elt["key"]))
-    print("[+] -------------------------------------------------- ")
+        _LOGGER.info("[+] {}: {}".format(elt["id"], elt["key"]))
+    _LOGGER.info("[+] -------------------------------------------------- ")
     return success, failed, final_map
 
 
@@ -136,12 +137,12 @@ def download_file(url, local_filename):
 
 def download_all_chunk(sp, the_map):
     sp.set_map(the_map)
-    print("[+] Fetching chunks...")
+    _LOGGER.info("[+] Fetching chunks...")
     for chk in the_map["cloud_map"]:
         elapsed_time = seconds_elapsed(chk["datetime"])
-        print("[+] Elapsed_time: ", elapsed_time, "seconds")
+        _LOGGER.info("[+] Elapsed_time: ", elapsed_time, "seconds")
         if elapsed_time >= 2000:
-            print("[+] Refreshing the direct-link, the tmp_link looks obsolete !")
+            _LOGGER.info("[+] Refreshing the direct-link, the tmp_link looks obsolete !")
             chk["tmp_link"] = get_direct_link(chk["chunk_id"])
         download_file(
             chk["tmp_link"], path.join(sp.chunks_directory, chk["chunk_name"])
@@ -151,21 +152,21 @@ def download_all_chunk(sp, the_map):
 
 def md5_checker(sp, saving_path):
     try:
-        print("[+] md5_sum checking...")
-        print("[+] Local md5 :", sp.get_map()["md5_sum"])
-        print("[+] Remote md5 :", get_md5_sum(saving_path))
+        _LOGGER.info("[+] md5_sum checking...")
+        _LOGGER.info("[+] Local md5 :", sp.get_map()["md5_sum"])
+        _LOGGER.info("[+] Remote md5 :", get_md5_sum(saving_path))
         condition = get_md5_sum(saving_path) == sp.get_map()["md5_sum"]
-        print("[+] md5_sum success match !") if condition else print(
+        _LOGGER.info("[+] md5_sum success match !") if condition else print(
             "[x] md5_sum failed match !"
         )
     except Exception as e:
-        print(
+        _LOGGER.error(
             "[x] Error when calculating the md5, please check again your file_path", e
         )
 
 
 def get_file(json_map_path):
-    print("[+] Start getting the file...")
+    _LOGGER.info("[+] Start getting the file...")
     with open(json_map_path, "r") as file:
         the_map = json.load(file)
         if path.exists(the_map["file"]["file_path"]):
@@ -174,13 +175,13 @@ def get_file(json_map_path):
             sp = Split(
                 chunks_directory="./chunks/",
                 json_map_directory="./json_maps/",
-                data_directory="./static/files/",
+                data_directory="./ocloud/server/static/files/",
             )
             sp = download_all_chunk(sp, the_map)
             saving_path = sp.data_directory + sp.get_map()["file"]["file_name"]
             sp.rebuild(saving_path)
             md5_checker(sp, saving_path)
-            print(
+            _LOGGER.info(
                 "[+] Your file {} have been successfully rebuilt !".format(saving_path)
             )
         return saving_path
@@ -193,10 +194,10 @@ def return_msg(status, message):
 def proceed_file(file_, chat_id):
     if file_ and chat_id:
         if file_.filename == "":
-            print("[x] No file selected for uploading !")
+            _LOGGER.info("[x] No file selected for uploading !")
             return return_msg("error", "No file selected for uploading !")
         else:
-            print("[+] Uploading file in static !")
+            _LOGGER.info("[+] Uploading file in static !")
             filename = secure_filename(file_.filename)
             message = ""
             file_.save(path.join(UPLOAD_FOLDER, filename))
@@ -225,7 +226,7 @@ def proceed_file(file_, chat_id):
                 }
             )
     else:
-        print("[x] Some parameters are missing, check your request again !")
+        _LOGGER.info("[x] Some parameters are missing, check your request again !")
         return return_msg(
             "error", "Some parameters are missing, check your request again !"
         )
@@ -234,10 +235,10 @@ def proceed_file(file_, chat_id):
 def proceed_chunk(chunk, chat_id):
     if chunk and chat_id:
         if chunk.filename == "":
-            print("[x] No file selected for uploading !")
+            _LOGGER.info("[x] No file selected for uploading !")
             return return_msg("error", "No file selected for uploading !")
         else:
-            print("[+] Uploading file in static !")
+            _LOGGER.info("[+] Uploading file in static !")
             filename = secure_filename(chunk.filename)
             chunk.save(path.join(UPLOAD_FOLDER, filename))
             if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
@@ -249,7 +250,7 @@ def proceed_chunk(chunk, chat_id):
                     "error", "Error, Operation failed, check again your parameters !"
                 )
     else:
-        print("[x] Some parameters are missing, check your request again!")
+        _LOGGER.info("[x] Some parameters are missing, check your request again!")
         return return_msg(
             "error", "Some parameters are missing, check your request again !"
         )

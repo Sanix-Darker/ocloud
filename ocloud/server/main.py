@@ -92,7 +92,10 @@ def getFiles(file_key):
         return add_headers(response)
     else:
         file_path = get_file(json_map_file)
-        return send_file_flask(file_path, as_attachment=True)
+        if path.exists(file_path):
+            return send_file_flask(file_path.replace("./ocloud/server/", ""), as_attachment=True)
+        else:
+            return render_template("refreshing.html")
 
 
 @app.route("/api/uploadchunk", methods=["POST"])  # To prevent Cors issues
