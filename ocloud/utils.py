@@ -118,11 +118,14 @@ def send_file(chat_id, file_name):
         "cloud_map": [],
         "file_map": sp.get_map(),
     }
-    _, _, final_map = send_all_chunks(
+    success, _, final_map = send_all_chunks(
         chat_id, sp.chunks_directory, final_map, sp.get_map()
     )
     sp.set_map(final_map)
-    return sp.write_json_map(md5_sum)
+    if success:  # If at least one chunk was successfully sent
+        return sp.write_json_map(md5_sum)
+
+    return None
 
 
 def download_file(url, local_filename):
@@ -142,9 +145,13 @@ def download_all_chunk(sp, the_map):
         elapsed_time = seconds_elapsed(chk["datetime"])
         _LOGGER.info("[+] Elapsed_time: %s seconds", elapsed_time)
         if elapsed_time >= 2000:
-            _LOGGER.info("[+] Refreshing the direct-link, the tmp_link looks obsolete !")
+            _LOGGER.info(
+                "[+] Refreshing the direct-link, the tmp_link looks obsolete !"
+            )
             chk["tmp_link"] = get_direct_link(chk["chunk_id"])
-        download_file(chk["tmp_link"], path.join(sp.chunks_directory, chk["chunk_name"]))
+        download_file(
+            chk["tmp_link"], path.join(sp.chunks_directory, chk["chunk_name"])
+        )
     return sp
 
 
@@ -180,7 +187,9 @@ def get_file(json_map_path):
         saving_path = sp.data_directory + sp.get_map()["file"]["file_name"]
         sp.rebuild(saving_path)
         md5_checker(sp, saving_path)
-        _LOGGER.info("[+] Your file {} has been successfully rebuilt !".format(saving_path))
+        _LOGGER.info(
+            "[+] Your file {} has been successfully rebuilt !".format(saving_path)
+        )
         return saving_path
 
 
@@ -188,7 +197,7 @@ def return_msg(status, message):
     return jsonify({"status": status, "message": message})
 
 
-def proceed_file(file_: str, chat_id: str):
+def proceed_file(file_, chat_id: str):
     if not file_ or not chat_id:
         _LOGGER.info("[x] Some parameters are missing, check your request again !")
         return return_msg(
@@ -201,7 +210,7 @@ def proceed_file(file_: str, chat_id: str):
 
     _LOGGER.info("[+] Uploading file in static !")
     filename = secure_filename(file_.filename)
-    file_path = path.join(UPLOAD_FOLDER, filename)
+    file_path = path.join(UPLOAD_FOLDER or "", filename)
 
     try:
         file_.save(file_path)
@@ -219,6 +228,7 @@ def proceed_file(file_: str, chat_id: str):
         json_path = send_file(chat_id, file_path)
         message = f"Your file {filename} have been saved successfully !"
 
+    assert json_path is not None
     try:
         json_map_elt = json.loads(open(json_path).read())
         for cl_map in json_map_elt.get("cloud_map", []):
@@ -245,7 +255,9 @@ def proceed_file(file_: str, chat_id: str):
 
 def proceed_chunk(chunk, chat_id):
     if not chunk or not chat_id:
-        return return_msg("error", "Some parameters are missing, check your request again!")
+        return return_msg(
+            "error", "Some parameters are missing, check your request again!"
+        )
 
     if chunk.filename == "":
         return return_msg("error", "No file selected for uploading!")
@@ -256,4 +268,6 @@ def proceed_chunk(chunk, chat_id):
     if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
         return return_msg("success", "Your chunk has been successfully sent!")
     else:
-        return return_msg("error", "Error: Operation failed. Please check your parameters.")
+        return return_msg(
+            "error", "Error: Operation failed. Please check your parameters."
+        )
