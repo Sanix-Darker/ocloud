@@ -1,23 +1,24 @@
 [tool.poetry]
 name = "ocloud"
 version = "0.1.0"
-description = "Store Your Chunks freely"
+description = "Store Your Chunks freely on Telegram servers."
 authors = ["sanix-darker <s4nixd@gmail.com>"]
 license = "Apache"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-Flask = "^3.0.2"
-Flask-Cors = "^4.0.0"
 python-dotenv = "^1.0.1"
 requests = "^2.31.0"
+fastapi = "^0.110.1"
+uvicorn = "^0.29.0"
+python-multipart = "^0.0.9"
+jinja2 = "^3.1.3"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.3"
 mypy = "^1.9.0"
 types-requests = "*"
-types-Flask-Cors = "*"
 
 [build-system]
 requires = ["poetry-core"]

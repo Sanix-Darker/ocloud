@@ -1,22 +1,49 @@
+from typing import Any
 import requests
 import json
 import time
 import os
 from os import remove, path
-from flask import jsonify
-from werkzeug.utils import secure_filename
 from hashlib import md5
 from ocloud.Split import Split
 from ocloud.settings import TG_TOKEN, UPLOAD_FOLDER
 import logging
+import re
+import unicodedata
 
 _LOGGER = logging.getLogger(__name__)
 CHUNK_SIZE = 8192
 
 
-def add_headers(response, status_code=200):
-    response.headers.add("Access-Control-Allow-Origin", "*")  # To prevent Cors issues
-    return response
+def secure_filename(filename, allowed_extensions=None):
+    """
+    Secure a filename for storing on the filesystem.
+
+    Args:
+        filename (str): The filename to secure.
+        allowed_extensions (list): List of allowed file extensions.
+
+    Returns:
+        str: Secured filename.
+    """
+    if not filename:
+        raise ValueError("Empty filename")
+
+    filename = unicodedata.normalize("NFKD", filename)
+    filename = filename.encode("ascii", "ignore").decode("ascii")
+    # Remove any characters that are not alphanumeric, underscores, or hyphens
+    filename = re.sub(r"[^\w.-]", "_", filename).strip()
+    # Ensure filename does not start with a dot or contain multiple dots in a row
+    filename = re.sub(r"\.+", ".", filename)
+    if filename.startswith("."):
+        filename = "_" + filename
+    # If allowed_extensions is provided, ensure the filename has a valid extension
+    if allowed_extensions:
+        filename, extension = os.path.splitext(filename)
+        if not extension or extension[1:] not in allowed_extensions:
+            raise ValueError("Invalid file extension")
+
+    return filename
 
 
 def try_create_storage_file():
@@ -42,7 +69,7 @@ def get_direct_link(file_id):
         return None
 
 
-def upload_chunk(chat_id, file_name):
+def upload_chunk(chat_id, file_name) -> dict:
     url = f"https://api.telegram.org/bot{TG_TOKEN}/sendDocument"
     files = {"document": open(file_name, "rb")}
     values = {"chat_id": chat_id}
@@ -51,7 +78,7 @@ def upload_chunk(chat_id, file_name):
         return json.loads(response.content.decode())
     except Exception as e:
         _LOGGER.warning("[x] An error occurred, check your internet connection:", e)
-        return None
+        return {}
 
 
 def send_chunk(chat_id, chunk_name):
@@ -156,6 +183,7 @@ def download_all_chunk(sp, the_map):
 
 
 def md5_checker(sp, saving_path):
+    """ """
     try:
         _LOGGER.info("[+] md5_sum checking...")
         _LOGGER.info("[+] Local md5 :", sp.get_map()["md5_sum"])
@@ -170,7 +198,8 @@ def md5_checker(sp, saving_path):
         )
 
 
-def get_file(json_map_path):
+def get_file(json_map_path: str) -> str:
+    """ """
     _LOGGER.info("[+] Start getting the file...")
     with open(json_map_path, "r") as file:
         the_map = json.load(file)
@@ -193,20 +222,15 @@ def get_file(json_map_path):
         return saving_path
 
 
-def return_msg(status, message):
-    return jsonify({"status": status, "message": message})
-
-
-def proceed_file(file_, chat_id: str):
+def proceed_file(file_, chat_id: str) -> tuple[str, str | Any]:
+    """ """
     if not file_ or not chat_id:
         _LOGGER.info("[x] Some parameters are missing, check your request again !")
-        return return_msg(
-            "error", "Some parameters are missing, check your request again !"
-        )
+        return ("error", "Some parameters are missing, check your request again !")
 
     if file_.filename == "":
         _LOGGER.info("[x] No file selected for uploading !")
-        return return_msg("error", "No file selected for uploading !")
+        return ("error", "No file selected for uploading !")
 
     _LOGGER.info("[+] Uploading file in static !")
     filename = secure_filename(file_.filename)
@@ -216,7 +240,7 @@ def proceed_file(file_, chat_id: str):
         file_.save(file_path)
     except Exception as e:
         _LOGGER.error(f"Failed to save the file: {e}")
-        return return_msg("error", "Failed to save the file")
+        return ("error", "Failed to save the file")
 
     json_path = (
         f"./json_maps/m_{get_md5_sum(file_path).replace(' ', '').split('/')[-1]}.json"
@@ -235,39 +259,35 @@ def proceed_file(file_, chat_id: str):
             del cl_map["tmp_link"]
     except Exception as e:
         _LOGGER.error(f"Failed to process JSON map: {e}")
-        return return_msg("error", "Failed to process JSON map")
+        return ("error", "Failed to process JSON map")
 
     try:
         os.remove(file_path)
     except Exception as e:
         _LOGGER.error(f"Failed to remove the file: {e}")
-        return return_msg("error", "Failed to remove the file")
+        return ("error", "Failed to remove the file")
 
-    return jsonify(
+    return (
+        "success",
         {
-            "status": "success",
             "message": message,
             "file_key": json_path.split("/")[-1].split("_")[1].split(".")[0],
             "json_map": json_map_elt,
-        }
+        },
     )
 
 
-def proceed_chunk(chunk, chat_id):
+def proceed_chunk(chunk, chat_id) -> tuple[str, Any]:
     if not chunk or not chat_id:
-        return return_msg(
-            "error", "Some parameters are missing, check your request again!"
-        )
+        return ("error", "Some parameters are missing, check your request again!")
 
     if chunk.filename == "":
-        return return_msg("error", "No file selected for uploading!")
+        return ("error", "No file selected for uploading!")
 
     filename = secure_filename(chunk.filename)
-    chunk.save(path.join(UPLOAD_FOLDER, filename))
+    chunk.save(os.path.join(UPLOAD_FOLDER, filename))
 
-    if upload_chunk(chat_id, UPLOAD_FOLDER + filename)["ok"]:
-        return return_msg("success", "Your chunk has been successfully sent!")
+    if upload_chunk(chat_id, UPLOAD_FOLDER + filename).get("ok"):
+        return ("success", "Your chunk has been successfully sent!")
     else:
-        return return_msg(
-            "error", "Error: Operation failed. Please check your parameters."
-        )
+        return ("error", "Error: Operation failed. Please check your parameters.")
