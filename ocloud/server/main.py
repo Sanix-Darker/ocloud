@@ -1,57 +1,70 @@
 # coding: utf-8
 import os
 import json
-from flask import Flask, jsonify, request, render_template, send_file
-from flask_cors import CORS, cross_origin
+from fastapi import FastAPI, UploadFile, Form, HTTPException, Request
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
-from ocloud.settings import UPLOAD_FOLDER
 from ocloud.utils import (
-    add_headers,
     get_file,
     proceed_chunk,
     proceed_file,
-    return_msg,
     try_create_storage_file,
 )
 
-app = Flask(__name__)
-CORS(app, support_credentials=True)
+app = FastAPI()
 
-app.config["Secret"] = "Secret"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 JSON_MAPS_FOLDER = "./json_maps/"
 
+# Point Jinja2Templates to the directory containing your HTML templates
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 def build_response(data, status="success", **kwargs):
     response_data = {"status": status, **data, **kwargs}
-    return jsonify(response_data)
+    return JSONResponse(content=response_data)
 
-@app.route("/")
-def index():
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
     try_create_storage_file()
-    return render_template("index.html")
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.route("/api/", methods=["GET"])
-@cross_origin(supports_credentials=True)
-def api():
+
+@app.get("/api/")
+async def api():
     try_create_storage_file()
     data = {
         "author": "sanix-darker (github.com/sanix-darker)",
         "documentation": "https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest",
         "message": "Welcome to Ocloud API.",
     }
-    return add_headers(build_response(data))
+    return build_response(data)
 
-@app.route("/api/count", methods=["GET"])
-@cross_origin(supports_credentials=True)
-def count_files():
+
+@app.get("/api/count")
+async def count_files():
     count = len(os.listdir(JSON_MAPS_FOLDER))
-    return add_headers(build_response({"count": count}))
+    return build_response({"count": count})
 
-@app.route("/api/checkfile/<file_key>", methods=["GET"])
-@cross_origin(supports_credentials=True)
-def check_file(file_key):
+
+@app.get("/api/checkfile/{file_key}")
+async def check_file(file_key: str):
     json_file = f"m_{file_key}.json"
     file_path = os.path.join(JSON_MAPS_FOLDER, json_file)
 
@@ -62,52 +75,62 @@ def check_file(file_key):
             "file_name": file_data["file"]["file_name"],
             "chunks": len(file_data["cloud_map"]),
         }
-        return add_headers(build_response(response_data))
+        return build_response(response_data)
     else:
-        return add_headers(build_response({"message": "File not found."}, status="error"))
+        return build_response({"message": "File not found."}, status="error")
 
-@app.route("/api/file/<file_key>", methods=["GET"])
-@cross_origin(supports_credentials=True)
-def get_file_from_key(file_key):
+
+@app.get("/api/file/{file_key}")
+async def get_file_from_key(file_key: str):
     try_create_storage_file()
     json_map_file = f"./json_maps/m_{file_key}.json"
 
     if not os.path.exists(json_map_file):
-        return add_headers(build_response({"file_key": file_key, "message": "File not found."}, status="error"))
+        return build_response(
+            {"file_key": file_key, "message": "File not found."}, status="error"
+        )
     else:
         file_path = get_file(json_map_file)
         if os.path.exists(file_path):
-            return send_file(file_path.replace("./ocloud/server/", ""), as_attachment=True)
+            return FileResponse(
+                file_path.replace("./ocloud/server/", ""),
+                media_type="application/octet-stream",
+            )
         else:
-            return render_template("refreshing.html")
+            raise HTTPException(status_code=404, detail="File not found.")
 
-@app.route("/api/uploadchunk", methods=["POST"])
-@cross_origin(supports_credentials=True)
-def upload_chunk():
-    chunk = request.files["chunk"]
-    chat_id = request.form.get("chat_id")
+
+@app.post("/api/uploadchunk")
+async def upload_chunk(chunk: UploadFile = Form(...), chat_id: str = Form(...)):
     try_create_storage_file()
 
     try:
-        response = proceed_chunk(chunk, chat_id)
-    except Exception as es:
-        response = return_msg("error", "An error occurred on the server. Please check your requirements.")
+        response = proceed_chunk(chunk.file, chat_id)
+    except Exception:
+        return {
+            "status": "error",
+            "message": "An error occurred on the server. Please check your requirements.",
+        }
 
-    return add_headers(response)
+    return response
 
-@app.route("/api/upload", methods=["POST"])
-@cross_origin(supports_credentials=True)
-def upload():
+
+@app.post("/api/upload")
+async def upload(chat_id: str = Form(...), file_: UploadFile = Form(...)):
     try_create_storage_file()
 
     try:
-        chat_id = request.form.get("chat_id")
-        file_ = request.files["file"]
-        response = proceed_file(file_, chat_id)
-    except Exception as es:
-        response = return_msg("error", "Request Entity Too Large: The data value transmitted exceeds the capacity limit.")
+        response = proceed_file(file_.file, chat_id)
+    except Exception:
+        return {
+            "status": "error",
+            "message": "Request Entity Too Large: The data value transmitted exceeds the capacity limit.",
+        }
 
-    return add_headers(response)
+    return response
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=False, port=9432)
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=9432)
