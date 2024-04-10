@@ -9,7 +9,7 @@ install: ## Install pip poetry
 	poetry install --no-root
 
 run:  ## Run the service.
-	python -m ocloud.main
+	python -m ocloud.server.main
 
 format:  ## Reformat project code.
 	${RUFF} --fix
