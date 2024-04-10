@@ -1,0 +1,105 @@
+body{
+	overflow-x: hidden;
+}
+
+.badge-black {
+	background-color: #212529;
+	color: white;
+}
+
+.cloudimg{
+	max-width: 43%;
+}
+
+#response, #response2{
+    font-size: 10px;
+    font-style: italic;
+}
+
+.bg-gradient {
+	padding-top: 1em;
+	height: 100vh;
+	max-height: auto;
+	color: white;
+	background: -webkit-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+	background: -o-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+	background: -moz-linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+	background: linear-gradient(130deg, #0069ff 50%, #006aff94 50%);
+}
+.lnk{
+	text-decoration: none;
+}
+.shadow{
+	box-shadow: 0 4px 7px rgba(0,0,0,0.34);
+}
+.txt-shadow{
+	text-shadow: 0 3px 4px rgba(0,0,0,0.45);
+}
+.storer-container {
+	text-align: center;
+}
+
+.storer {
+	margin: 8% 0;
+	width: 25%;
+	height: auto;
+}
+
+#app {
+	margin-bottom: 85px;
+}
+
+#file_key_output{
+	cursor: pointer;
+}
+
+.footer {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	z-index: 99;
+	font-size: 0.9em;
+	background-color: #fff;
+}
+
+.footer div {
+	display: flex;
+	flex-wrap: wrap;
+}
+#count{
+	text-align: center;
+}
+/* On screens that are 600px or less, set the background color to olive */
+@media screen and (max-width: 600px) {
+	.bg-gradient {
+		padding: 1em;
+	}
+
+	.bg-gradient .display-1 {
+		font-size: 3.9rem;
+		font-weight: 500;
+		line-height: 1.2;
+	}
+	.bg-gradient h2 {
+		font-size: 1.75rem;
+		font-weight: 300;
+	}
+
+	.storer-container {
+		display: none;
+	}
+
+	#app {
+		margin-bottom: 0;
+	}
+
+	.footer {
+		position: relative;
+	}
+	body{
+		overflow: auto;
+	}
+	.cloudimg{
+		max-width: 100%;
+	}
+}

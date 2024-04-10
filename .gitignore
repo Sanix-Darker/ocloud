@@ -5,12 +5,11 @@ env
 *__pycache__
 *.pyc
 .vcode
-ocloud/server/static/files/
-app/api/__pycache__/
+static/files/
+ocloud/api/__pycache__/
 tests/__pycache__/
 tests/.pytest_cache/
 config.txt
 .idea
 json_maps/*
 chunks/*
-app/server/static/files/*
