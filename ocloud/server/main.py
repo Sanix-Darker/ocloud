@@ -8,27 +8,21 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from ocloud.utils import (
+    JSON_MAPS_FOLDER,
     get_file,
     proceed_chunk,
     proceed_file,
-    try_create_storage_file,
 )
 
 app = FastAPI()
 
-origins = [
-    "*",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
-
-JSON_MAPS_FOLDER = "./json_maps/"
 
 # Point Jinja2Templates to the directory containing your HTML templates
 templates = Jinja2Templates(directory="templates")
@@ -42,13 +36,11 @@ def build_response(data, status="success", **kwargs):
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    try_create_storage_file()
     return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/api/")
 async def api():
-    try_create_storage_file()
     data = {
         "author": "sanix-darker (github.com/sanix-darker)",
         "documentation": "https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest",
@@ -82,7 +74,6 @@ async def check_file(file_key: str):
 
 @app.get("/api/file/{file_key}")
 async def get_file_from_key(file_key: str):
-    try_create_storage_file()
     json_map_file = f"./json_maps/m_{file_key}.json"
 
     if not os.path.exists(json_map_file):
@@ -102,8 +93,6 @@ async def get_file_from_key(file_key: str):
 
 @app.post("/api/uploadchunk")
 async def upload_chunk(chunk: UploadFile = Form(...), chat_id: str = Form(...)):
-    try_create_storage_file()
-
     try:
         response = proceed_chunk(chunk.file, chat_id)
     except Exception:
@@ -117,10 +106,8 @@ async def upload_chunk(chunk: UploadFile = Form(...), chat_id: str = Form(...)):
 
 @app.post("/api/upload")
 async def upload(chat_id: str = Form(...), file_: UploadFile = Form(...)):
-    try_create_storage_file()
-
     try:
-        response = proceed_file(file_.file, chat_id)
+        response = proceed_file(file_.file, int(chat_id))
     except Exception:
         return {
             "status": "error",

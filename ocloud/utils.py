@@ -6,16 +6,23 @@ import os
 from os import remove, path
 from hashlib import md5
 from ocloud.Split import Split
-from ocloud.settings import TG_TOKEN, UPLOAD_FOLDER
+from ocloud.settings import TG_TOKEN
 import logging
 import re
 import unicodedata
 
 _LOGGER = logging.getLogger(__name__)
+
 CHUNK_SIZE = 8192
+JSON_MAPS_FOLDER = "./json_maps"
+UPLOAD_FOLDER = "uploads"
+TELEGRAM_API_HOST = ""
 
 
-def secure_filename(filename, allowed_extensions=None):
+def secure_filename(
+    filename: str,
+    allowed_extensions: list[str] | None = None,
+) -> str:
     """
     Secure a filename for storing on the filesystem.
 
@@ -46,33 +53,35 @@ def secure_filename(filename, allowed_extensions=None):
     return filename
 
 
-def try_create_storage_file():
-    os.makedirs("./ocloud/server/static/files/", exist_ok=True)
+def get_direct_link(file_id: int) -> str | None:
+    """
+    Get the direct link of a file from its file-id on telegram servers.
 
+    """
 
-def seconds_elapsed(start):
-    return int(time.time() - start)
-
-
-def get_direct_link(file_id):
     url = f"https://api.telegram.org/bot{TG_TOKEN}/getFile?file_id={file_id}"
+
     try:
         result = json.loads(requests.get(url).content.decode())
-        file_path = result.get("result", {}).get("file_path")
-        return (
-            f"https://api.telegram.org/file/bot{TG_TOKEN}/{file_path}"
-            if file_path
-            else None
-        )
+        if file_path := result.get("result", {}).get("file_path"):
+            return f"https://api.telegram.org/file/bot{TG_TOKEN}/{file_path}"
+
+        raise
     except Exception as e:
-        _LOGGER.warning("[x] An error occurred, check your internet connection:", e)
+        _LOGGER.warning("Unable to get_direct_link", exc_info=e)
         return None
 
 
-def upload_chunk(chat_id, file_name) -> dict:
+def upload_chunk(
+    chat_id: int,
+    file_name: str,
+) -> dict:
+    """ """
+
     url = f"https://api.telegram.org/bot{TG_TOKEN}/sendDocument"
     files = {"document": open(file_name, "rb")}
     values = {"chat_id": chat_id}
+
     try:
         response = requests.post(url, files=files, data=values)
         return json.loads(response.content.decode())
@@ -81,18 +90,22 @@ def upload_chunk(chat_id, file_name) -> dict:
         return {}
 
 
-def send_chunk(chat_id, chunk_name):
-    result = upload_chunk(chat_id, chunk_name)
+def send_chunk(
+    chat_id: int,
+    chunk_name: str,
+) -> tuple[int, str]:
+    """ """
+
+    result: dict[str, Any] = upload_chunk(chat_id, chunk_name)
     if result and result.get("ok"):
         file_id = result["result"]["document"]["file_id"]
-        direct_link = get_direct_link(file_id)
-    else:
-        file_id = False
-        direct_link = "[x] Error, Operation failed !"
-    return file_id, direct_link
+        if direct_link := get_direct_link(file_id):
+            return file_id, direct_link
+
+    raise Exception("Unable to send chunk.")
 
 
-def get_md5_sum(file_name):
+def get_md5_sum(file_name: str) -> str:
     hasher = md5()
     with open(file_name, "rb") as file:
         for chunk in iter(lambda: file.read(4096), b""):
@@ -101,8 +114,12 @@ def get_md5_sum(file_name):
 
 
 def send_all_chunks(
-    chat_id, chunk_dir, final_map, json_map_of_chunks, delete_chunk=True
-):
+    chat_id: int,
+    chunk_dir: str,
+    final_map: dict[str, Any],
+    json_map_of_chunks: dict[str, Any],
+    delete_chunk: bool = True,
+) -> tuple[list, list, dict]:
     success = []
     failed = []
     for key, val in json_map_of_chunks.items():
@@ -131,10 +148,12 @@ def send_all_chunks(
     return success, failed, final_map
 
 
-def send_file(chat_id, file_name):
+def send_file(chat_id: int, file_name: str) -> str:
+    """ """
+
     sp = Split(
         chunks_directory="./chunks/",
-        json_map_directory="./json_maps/",
+        json_map_directory=f"{JSON_MAPS_FOLDER}/",
         data_directory="./ocloud/server/static/files/",
     )
     sp.decompose(file_name)
@@ -152,10 +171,10 @@ def send_file(chat_id, file_name):
     if success:  # If at least one chunk was successfully sent
         return sp.write_json_map(md5_sum)
 
-    return None
+    raise Exception("No chunk sent")
 
 
-def download_file(url, local_filename):
+def download_file(url: str, local_filename: str) -> str:
     with requests.get(url, stream=True) as response:
         response.raise_for_status()
         with open(local_filename, "wb") as file:
@@ -169,7 +188,7 @@ def download_all_chunk(sp, the_map):
     sp.set_map(the_map)
     _LOGGER.info("[+] Fetching chunks...")
     for chk in the_map["cloud_map"]:
-        elapsed_time = seconds_elapsed(chk["datetime"])
+        elapsed_time = int(time.time() - chk["datetime"])
         _LOGGER.info("[+] Elapsed_time: %s seconds", elapsed_time)
         if elapsed_time >= 2000:
             _LOGGER.info(
@@ -209,7 +228,7 @@ def get_file(json_map_path: str) -> str:
 
         sp = Split(
             chunks_directory="./chunks/",
-            json_map_directory="./json_maps/",
+            json_map_directory=f"{JSON_MAPS_FOLDER}/",
             data_directory="./ocloud/server/static/files/",
         )
         sp = download_all_chunk(sp, the_map)
@@ -222,8 +241,12 @@ def get_file(json_map_path: str) -> str:
         return saving_path
 
 
-def proceed_file(file_, chat_id: str) -> tuple[str, str | Any]:
+def proceed_file(
+    file_: Any,
+    chat_id: int,
+) -> tuple[str, str | Any]:
     """ """
+
     if not file_ or not chat_id:
         _LOGGER.info("[x] Some parameters are missing, check your request again !")
         return ("error", "Some parameters are missing, check your request again !")
@@ -232,7 +255,6 @@ def proceed_file(file_, chat_id: str) -> tuple[str, str | Any]:
         _LOGGER.info("[x] No file selected for uploading !")
         return ("error", "No file selected for uploading !")
 
-    _LOGGER.info("[+] Uploading file in static !")
     filename = secure_filename(file_.filename)
     file_path = path.join(UPLOAD_FOLDER or "", filename)
 
@@ -242,9 +264,7 @@ def proceed_file(file_, chat_id: str) -> tuple[str, str | Any]:
         _LOGGER.error(f"Failed to save the file: {e}")
         return ("error", "Failed to save the file")
 
-    json_path = (
-        f"./json_maps/m_{get_md5_sum(file_path).replace(' ', '').split('/')[-1]}.json"
-    )
+    json_path = f"{JSON_MAPS_FOLDER}/m_{get_md5_sum(file_path).replace(' ', '').split('/')[-1]}.json"
 
     if path.exists(json_path):
         message = f"Your file {filename} was already saved on telegram servers!"

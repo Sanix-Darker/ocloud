@@ -2,6 +2,10 @@
 
 - [ ] Add effective logging.
 - [ ] Add better config process.
+- [ ] Add more tests Integration and unit tests per modules.
+- [ ] Add more error handling.
+- [ ] Add CI/CD pipelines for testing and maybe deploying too ?
+- [ ] Convert all postman queries to curl command lines in the documentation(WIKI).
 - [ ] Refacto and use fastAPI instead (to benefit async calls).
 - [ ] Migrate to mongoDB storage (for json_maps).
 - [ ] Add Dockerfile to the project.
