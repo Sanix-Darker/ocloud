@@ -6,17 +6,18 @@ import os
 from os import remove, path
 from hashlib import md5
 from ocloud.Split import Split
-from ocloud.settings import TG_TOKEN
+from ocloud.config import (
+    CHUNK_SIZE,
+    JSON_MAPS_FOLDER,
+    TELEGRAM_API_HOST,
+    TG_TOKEN,
+    UPLOAD_FOLDER,
+)
 import logging
 import re
 import unicodedata
 
 _LOGGER = logging.getLogger(__name__)
-
-CHUNK_SIZE = 8192
-JSON_MAPS_FOLDER = "./json_maps"
-UPLOAD_FOLDER = "uploads"
-TELEGRAM_API_HOST = ""
 
 
 def secure_filename(
@@ -59,12 +60,12 @@ def get_direct_link(file_id: int) -> str | None:
 
     """
 
-    url = f"https://api.telegram.org/bot{TG_TOKEN}/getFile?file_id={file_id}"
+    url = f"{TELEGRAM_API_HOST}/bot{TG_TOKEN}/getFile?file_id={file_id}"
 
     try:
         result = json.loads(requests.get(url).content.decode())
         if file_path := result.get("result", {}).get("file_path"):
-            return f"https://api.telegram.org/file/bot{TG_TOKEN}/{file_path}"
+            return f"{TELEGRAM_API_HOST}/file/bot{TG_TOKEN}/{file_path}"
 
         raise
     except Exception as e:
@@ -78,7 +79,7 @@ def upload_chunk(
 ) -> dict:
     """ """
 
-    url = f"https://api.telegram.org/bot{TG_TOKEN}/sendDocument"
+    url = f"{TELEGRAM_API_HOST}/bot{TG_TOKEN}/sendDocument"
     files = {"document": open(file_name, "rb")}
     values = {"chat_id": chat_id}
 
