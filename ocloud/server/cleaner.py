@@ -94,7 +94,7 @@ def get_file_or_folder_age(path):
 if __name__ == "__main__":
     while True:
         print(
-            "[+] Ogram-Cleaner Starting(will delete./ocloud/server/static/files/* for life > 24h)..."
+            "[+] OCleaner Starting(will delete./ocloud/server/static/files/* for life > 24h)..."
         )
         main()
         print("[+] Sleeping for 1h...")

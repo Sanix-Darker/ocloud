@@ -13,10 +13,12 @@ Check te [GETTING STARTED](./GETTING_STARTED.md) for self hosted tech details.
 
 ## DEMO LINKS
 
-Ogram split a file >= 19MB, in multiples chunks and send it throught the Telegram-bot. All the links of the running project :
+Ogram split a file >= 19MB, in multiples chunks and send it throught the Telegram-bot.
+All the links of the running project :
+
 - [DEMO BOT-LINK (omega_gram_bot)](https://t.me/omega_gram_bot) <br>
-- [DEMO PROJECT-LINK (ogramcloud)](https://ogramcloud.com)
-- [DEMO API-LINK (ogram_api)](https://ogramcloud.com/api)
+- [DEMO PROJECT-LINK (OCloud)](https://ocloud.sanxidk.xyz)
+- [DEMO API-LINK (ogram_api)](https://ocloud.sanxidk.xyz/api)
 - [THE DOCUMENTATION-API](https://documenter.getpostman.com/view/2696027/SzYgRaw1?version=latest)
 
 ## REQUIREMENTS

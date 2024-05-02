@@ -1,6 +1,8 @@
 ## TODO
 
-- [ ] refacto and use fastAPI instead (to benefit async calls).
+- [ ] Add effective logging.
+- [ ] Add better config process.
+- [ ] Refacto and use fastAPI instead (to benefit async calls).
 - [ ] Migrate to mongoDB storage (for json_maps).
 - [ ] Add Dockerfile to the project.
 - [ ] Add an id for each upload to follow/link [identify] a user (ip address or something like that at least).
