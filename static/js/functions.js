@@ -6,6 +6,7 @@
 let savedModalContent = null;
 let datas = null;
 let chatId = null;
+let API_VERSION = "/api/v1"
 
 const init = () => {
 	var router = new Router([
@@ -110,8 +111,8 @@ const showSavedModal = (data = null) => {
                         </div>
                         <p>
                             <b>DownloadLink :</b>
-                            <a target="_blank" class="h6 small" href="${location.origin + "/api/file/" + data.file_key}">
-                                ${location.origin + "/api/file/" + data.file_key}
+                            <a target="_blank" class="h6 small" href="${location.origin + API_VERSION + "/file/" + data.file_key}">
+                                ${location.origin + API_VERSION + "/file/" + data.file_key}
                             </a>
                         </p>
                         <section>
@@ -160,9 +161,8 @@ const uploadFile = (event) => {
             ajax.addEventListener("load", completeHandler, false);
             ajax.addEventListener("error", errorHandler, false);
             ajax.addEventListener("abort", abortHandler, false);
-            ajax.open("POST", "/api/upload");
+            ajax.open("POST", `${API_VERSION}/upload`);
             ajax.send(datas);
-
         }
     }
 }
@@ -207,7 +207,7 @@ const generateDownloadLink = () => {
 
 // let fetch the numbr of files
 const refreshCount = () => {
-    fetch(`/api/count`)
+    fetch(`${API_VERSION}/count`)
     .then((response) => {
         return response.json()
     }).then(data => {
